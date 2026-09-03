@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+eval/round-*/screenshots/
+design-refs/skan-ai/screenshots/
+*.local
