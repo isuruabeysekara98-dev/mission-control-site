@@ -87,7 +87,7 @@
 .g-link.hl { stroke: rgba(132,238,100,0.7); stroke-width: 1.6; }
 .g-link.dim { stroke: rgba(255,255,255,0.03); }
 
-.g-node { cursor: pointer; animation: atlas-nodein .9s cubic-bezier(.2,.8,.25,1) both; }
+.g-node { cursor: pointer; animation: atlas-nodein .9s cubic-bezier(.2,.8,.25,1) backwards; }
 @keyframes atlas-nodein { from { opacity: 0; } to { opacity: 1; } }
 .g-node circle { transition: fill .25s, stroke .25s; }
 .g-node circle.hitc { fill: transparent !important; stroke: none !important; filter: none !important; animation: none !important; }
@@ -98,15 +98,17 @@
   0%, 100% { filter: drop-shadow(0 0 8px rgba(132,238,100,0.3)); }
   50%      { filter: drop-shadow(0 0 20px rgba(132,238,100,0.65)); }
 }
-.g-node.dept text { font-family: var(--font-display); font-size: 13px; font-weight: 500; fill: var(--text-hi); }
+/* text sizes scale with the camera (--zs = viewBox width / svg width) so labels keep their on-screen size */
+.g-node.dept text { font-family: var(--font-display); font-size: calc(13px * var(--zs, 1)); font-weight: 500; fill: var(--text-hi); }
 .g-node.wf circle { fill: var(--glow-violet); }
-.g-node.wf text { font-size: 10.5px; fill: var(--text-mid); }
+.g-node.wf text { font-size: calc(10.5px * var(--zs, 1)); fill: var(--text-mid); }
 .g-node.person circle { fill: var(--text-mid); }
-.g-node.person text { font-size: 9.5px; fill: var(--text-lo); }
+.g-node.person text { font-size: calc(9.5px * var(--zs, 1)); fill: var(--text-lo); }
 .g-node.tool circle { fill: var(--amber); }
-.g-node.tool text { font-size: 9.5px; fill: rgba(240,164,74,0.8); }
+.g-node.tool text { font-size: calc(9.5px * var(--zs, 1)); fill: rgba(240,164,74,0.8); }
 .g-node.person text, .g-node.tool text { opacity: 0; }
-.g-node.person.hl text, .g-node.tool.hl text, .g-node:hover text { opacity: 1; }
+.g-node.person.hl text, .g-node.tool.hl text, .g-node:hover text,
+#view-graph.focused .g-node.in.person text, #view-graph.focused .g-node.in.tool text { opacity: 1; }
 
 .g-tooltip {
   position: fixed; pointer-events: none; z-index: 160;
@@ -295,18 +297,16 @@
 .gs-open:hover { color: var(--accent-ink); background: var(--accent); }
 
 /* ============ Graph — deep-dive states ============ */
-.g-node.off { opacity: 0.05; pointer-events: none; }
-.g-node.far { opacity: 0.55; }
-.g-node.far circle { animation: none; filter: none; stroke: rgba(132,238,100,0.45); }
-.g-node.far text { fill: var(--text-lo); font-size: 11px; }
-.g-node.far.hl, #view-graph.focused .g-node.far:hover { opacity: 0.9; }
+.g-node, .g-link { transition: opacity .45s ease; }
+.g-node.off { opacity: 0; pointer-events: none; }
 .g-link.off { opacity: 0; }
 #view-graph.focused .g-node.in.dim { opacity: 0.22; }
 .g-arrow { fill: var(--accent); }
-.g-bridge { stroke: rgba(132,238,100,0.55); stroke-width: 1.2; stroke-dasharray: 4 5; animation: bridge-flow 1.4s linear infinite; }
+.g-bridge { stroke: rgba(132,238,100,0.6); stroke-width: calc(1.2px * var(--zs, 1)); stroke-dasharray: 4 5; animation: bridge-flow 1.4s linear infinite; }
 @keyframes bridge-flow { to { stroke-dashoffset: -18; } }
-.g-bridge-label { font-family: var(--font-body); font-size: 10.5px; fill: var(--text-hi); pointer-events: none; }
-.g-bridge-label .sub { fill: var(--text-lo); font-size: 9.5px; }
+.g-bridge-label { font-family: var(--font-body); font-size: calc(11px * var(--zs, 1)); fill: var(--text-hi); pointer-events: none; }
+.g-bridge-label .sub { fill: var(--text-lo); font-size: calc(9.5px * var(--zs, 1)); }
+#view-graph.focused .g-link { stroke: rgba(255,255,255,0.2); }
 
 .graph-focus-head {
   position: absolute; top: 24px; right: 24px; transform: translateY(-10px);

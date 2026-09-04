@@ -137,6 +137,9 @@ export function initAtlas(root) {
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     graph.W = W; graph.H = H;
     graph.cx = W * 0.56; graph.cy = H * 0.5;
+    graph.svg = svg;
+    graph.view = { x: 0, y: 0, w: W, h: H }; // camera (viewBox), eased toward the focused cluster
+    graph.scale = 1;
 
     const depts = graph.nodes.filter((n) => n.kind === 'dept');
     depts.forEach((d, i) => {
@@ -226,8 +229,8 @@ export function initAtlas(root) {
       g.addEventListener('dblclick', (e) => { e.stopPropagation(); if (n.kind === 'wf') { selectWf(n.ref); openWorkflow(n.ref); } });
 
       let drag = null;
-      g.addEventListener('pointerdown', (e) => { drag = { dx: n.x - e.clientX, dy: n.y - e.clientY }; n.fixed = true; g.setPointerCapture(e.pointerId); graph.heat = 0.12; e.stopPropagation(); });
-      g.addEventListener('pointermove', (e) => { if (!drag) return; n.x = e.clientX + drag.dx; n.y = e.clientY + drag.dy; graph.heat = 0.5; });
+      g.addEventListener('pointerdown', (e) => { drag = { sx: n.x, sy: n.y, cx: e.clientX, cy: e.clientY }; n.fixed = true; g.setPointerCapture(e.pointerId); graph.heat = 0.12; e.stopPropagation(); });
+      g.addEventListener('pointermove', (e) => { if (!drag) return; n.x = drag.sx + (e.clientX - drag.cx) * graph.scale; n.y = drag.sy + (e.clientY - drag.cy) * graph.scale; graph.heat = 0.5; });
       g.addEventListener('pointerup', () => { drag = null; n.fixed = false; });
     });
 
@@ -252,39 +255,32 @@ export function initAtlas(root) {
     const wfIds = new Set(dept.workflows.map((w) => 'w:' + w.id));
     const inSet = new Set(['d:' + dept.id, ...wfIds]);
     dept.workflows.forEach((w) => { w.people.forEach((p) => inSet.add('p:' + p)); w.tools.forEach((t) => inSet.add('t:' + t)); });
-    const { W, H, cx, cy } = graph;
-    const R = Math.min(W, H) * 0.44;
-    const far = graph.nodes.filter((n) => n.kind === 'dept' && n.ref !== dept);
+    graph.inSet = inSet;
+    // only the department's own cluster stays on stage; everything else leaves the view
     graph.nodes.forEach((n) => {
       n.el.classList.remove('dim', 'hl');
-      const isIn = inSet.has(n.id), isFar = n.kind === 'dept' && n.ref !== dept;
-      n.el.classList.toggle('in', isIn); n.el.classList.toggle('far', isFar); n.el.classList.toggle('off', !isIn && !isFar);
-      n.home = null;
-      if (n.id === 'd:' + dept.id) n.home = { x: cx, y: cy, k: 0.03 };
-      if (isFar) {
-        const i = far.indexOf(n), a = (i / far.length) * Math.PI * 2 - Math.PI / 2 + 0.35;
-        n.home = { x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R * 0.86, k: 0.04 };
-      }
+      const isIn = inSet.has(n.id);
+      n.el.classList.toggle('in', isIn); n.el.classList.toggle('off', !isIn);
     });
     graph.links.forEach((l) => {
       l.off = !(inSet.has(l.s.id) && inSet.has(l.t.id));
       l.el.classList.toggle('off', l.off); l.el.classList.remove('hl', 'dim');
     });
-    // cross-department bridges: one per department that shares people/tools with the focused one
+    // connections beyond the view: one arrow per linked department, drawn to the edge of the frame
     clearBridges();
-    far.forEach((fn) => {
+    graph.nodes.filter((n) => n.kind === 'dept' && n.ref !== dept).forEach((fn) => {
       const { people, tools } = sharedBetween(dept, fn.ref);
       if (!people.length && !tools.length) return;
       const line = document.createElementNS(SVGNS, 'line');
       line.setAttribute('class', 'g-bridge'); line.setAttribute('marker-end', 'url(#g-arrow)');
       const label = document.createElementNS(SVGNS, 'text');
-      label.setAttribute('class', 'g-bridge-label'); label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('class', 'g-bridge-label');
       const l1 = document.createElementNS(SVGNS, 'tspan'); l1.textContent = `→ ${fn.ref.name}`;
-      const l2 = document.createElementNS(SVGNS, 'tspan'); l2.setAttribute('x', 0); l2.setAttribute('dy', 13); l2.setAttribute('class', 'sub');
+      const l2 = document.createElementNS(SVGNS, 'tspan'); l2.setAttribute('x', 0); l2.setAttribute('dy', '1.25em'); l2.setAttribute('class', 'sub');
       const parts = [];
       if (people.length) parts.push(`${people.length} ${people.length === 1 ? 'person' : 'people'}`);
       if (tools.length) parts.push(`${tools.length} ${tools.length === 1 ? 'tool' : 'tools'}`);
-      l2.textContent = parts.join(' · ') + ' shared';
+      l2.textContent = parts.join(' · ') + ' shared beyond this view';
       label.append(l1, l2);
       graph.bridgeLayer.append(line, label);
       graph.bridges.push({ from: graph.byId['d:' + dept.id], to: fn, line, label, people, tools });
@@ -294,11 +290,13 @@ export function initAtlas(root) {
       <div class="gfh-eyebrow">Department deep-dive · led by ${dept.lead}</div>
       <div class="gfh-title">${dept.name}</div>
       <div class="gfh-blurb">${dept.blurb}</div>
-      <div class="gfh-meta">${dept.workflows.length} workflows · ${inSet.size - 1 - dept.workflows.length} people &amp; tools · ${graph.bridges.length} linked departments
+      <div class="gfh-meta">${dept.workflows.length} workflows · ${inSet.size - 1 - dept.workflows.length} people &amp; tools · ${graph.bridges.length} linked departments beyond the view
         <button class="gfh-clear" id="gfh-clear">Zoom out ✕</button></div>`;
     $('#graph-focus-head').classList.add('on');
     $('#gfh-clear').addEventListener('click', clearFocus);
     $('#view-graph').classList.add('focused');
+    // the camera frames the cluster in the space between the side panel and the deep-dive header
+    graph.ui = { left: $('.graph-side').offsetWidth + 40, right: $('#graph-focus-head').offsetWidth + 40 };
     $('#graph-wf-chip').classList.remove('on');
     syncSidebar(); setCrumbs();
   }
@@ -309,8 +307,8 @@ export function initAtlas(root) {
   }
 
   function clearFocus() {
-    state.dept = null; state.wf = null;
-    graph.nodes.forEach((n) => { n.el.classList.remove('in', 'far', 'off', 'dim', 'hl'); n.home = null; });
+    state.dept = null; state.wf = null; graph.inSet = null; graph.ui = null;
+    graph.nodes.forEach((n) => { n.el.classList.remove('in', 'off', 'dim', 'hl'); });
     graph.links.forEach((l) => { l.off = false; l.el.classList.remove('off', 'hl', 'dim'); });
     clearBridges();
     graph.heat = 1;
@@ -327,7 +325,7 @@ export function initAtlas(root) {
     graph.nodes.forEach((n) => {
       if (n.el.classList.contains('off')) return;
       n.el.classList.toggle('hl', Boolean(rel && rel.has(n.id)));
-      n.el.classList.toggle('dim', Boolean(rel && !rel.has(n.id) && !n.el.classList.contains('far')));
+      n.el.classList.toggle('dim', Boolean(rel && !rel.has(n.id)));
     });
     graph.links.forEach((l) => {
       if (l.off) return;
@@ -335,6 +333,7 @@ export function initAtlas(root) {
       l.el.classList.toggle('hl', Boolean(on)); l.el.classList.toggle('dim', Boolean(rel && !on));
     });
     const chip = $('#graph-wf-chip');
+    if (graph.ui) graph.ui.bottom = wf ? 96 : 0; // keep the frame-edge arrows clear of the chip
     if (wf) {
       chip.innerHTML = `<span class="chip-code">${wf.code}</span><span class="chip-name">${wf.name}</span>
         <span class="chip-meta"># ${fmt(wf.cases)} cases · ${wf.steps.length} activities · ${wf.people.length} people · ${wf.tools.length} systems</span>
@@ -362,11 +361,10 @@ export function initAtlas(root) {
         if (n.fixed) return;
         n.vx += Math.sin(t * n.wf1 + n.wp1) * n.wamp + Math.cos(t * n.wf2 + n.wp2) * n.wamp * 0.6;
         n.vy += Math.cos(t * n.wf1 + n.wp2) * n.wamp + Math.sin(t * n.wf2 + n.wp1) * n.wamp * 0.6;
-        if (n.home) { n.vx += (n.home.x - n.x) * n.home.k; n.vy += (n.home.y - n.y) * n.home.k; }
       });
       links.forEach((l) => {
         if (l.off) return;
-        const rest = l.s.kind === 'dept' || l.t.kind === 'dept' ? (state.dept ? 120 : 150) : 92;
+        const rest = l.s.kind === 'dept' || l.t.kind === 'dept' ? (state.dept ? 200 : 150) : (state.dept ? 124 : 92);
         const dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, d = Math.hypot(dx, dy) || 1;
         const f = ((d - rest) / d) * 0.03 * l.w * alpha;
         if (!l.s.fixed) { l.s.vx += dx * f; l.s.vy += dy * f; }
@@ -377,14 +375,14 @@ export function initAtlas(root) {
         let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
         if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
         if (d2 > 160000) continue;
-        const k = (a.kind === 'dept' && b.kind === 'dept' ? 22000 : 5200) * alpha / d2;
+        const k = (a.kind === 'dept' && b.kind === 'dept' ? 22000 : 5200) * (state.dept ? 2.6 : 1) * alpha / d2;
         const d = Math.sqrt(d2), fx = (dx / d) * k, fy = (dy / d) * k;
         if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
         if (!b.fixed) { b.vx += fx; b.vy += fy; }
       }
       live.forEach((n) => {
         if (n.fixed) { n.vx = 0; n.vy = 0; return; }
-        if (!n.home) { n.vx += (graph.cx - n.x) * 0.006 * alpha; n.vy += (graph.cy - n.y) * 0.008 * alpha; }
+        n.vx += (graph.cx - n.x) * 0.006 * alpha; n.vy += (graph.cy - n.y) * 0.008 * alpha;
         n.vx *= 0.85; n.vy *= 0.85;
         const sp = Math.hypot(n.vx, n.vy);
         if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
@@ -395,14 +393,43 @@ export function initAtlas(root) {
       });
       links.forEach((l) => { l.el.setAttribute('x1', l.s.x); l.el.setAttribute('y1', l.s.y); l.el.setAttribute('x2', l.t.x); l.el.setAttribute('y2', l.t.y); });
       nodes.forEach((n) => n.el.setAttribute('transform', `translate(${n.x},${n.y})`));
+      /* camera: ease the viewBox onto the focused cluster (or back to the full mesh) */
+      const { W, H } = graph;
+      let target = { x: 0, y: 0, w: W, h: H };
+      if (graph.inSet) {
+        const pts = live.filter((n) => graph.inSet.has(n.id));
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        pts.forEach((n) => { minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x); minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y); });
+        const pad = 96;
+        const bw = maxX - minX + pad * 2, bh = maxY - minY + pad * 2;
+        const ui = graph.ui || { left: 0, right: 0, bottom: 0 };
+        const uw = Math.max(240, W - ui.left - ui.right), uh = H - 48 - (ui.bottom || 0); // usable screen area, px
+        const s = Math.max(bw / uw, bh / uh, 1 / 1.9);                                    // user units per screen px; never past 1.9×
+        target = { x: (minX + maxX) / 2 - (ui.left + uw / 2) * s, y: (minY + maxY) / 2 - (24 + uh / 2) * s, w: W * s, h: H * s };
+      }
+      const v = graph.view, k = 0.08;
+      v.x += (target.x - v.x) * k; v.y += (target.y - v.y) * k; v.w += (target.w - v.w) * k; v.h += (target.h - v.h) * k;
+      graph.svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`);
+      graph.scale = v.w / W;
+      graph.svg.style.setProperty('--zs', graph.scale);
+
+      /* arrows to departments beyond the frame: from the focused department to the edge of the usable area, labelled */
+      const ui = graph.ui || { left: 0, right: 0, bottom: 0 }, m = 56 * graph.scale;
+      const rect = { x0: v.x + ui.left * graph.scale + m, y0: v.y + m, x1: v.x + v.w - ui.right * graph.scale - m, y1: v.y + v.h - (ui.bottom || 0) * graph.scale - m };
       graph.bridges.forEach((b) => {
-        const dx = b.to.x - b.from.x, dy = b.to.y - b.from.y, d = Math.hypot(dx, dy) || 1;
-        const x1 = b.from.x + (dx / d) * (b.from.r + 10), y1 = b.from.y + (dy / d) * (b.from.r + 10);
-        const x2 = b.to.x - (dx / d) * (b.to.r + 12), y2 = b.to.y - (dy / d) * (b.to.r + 12);
-        b.line.setAttribute('x1', x1); b.line.setAttribute('y1', y1); b.line.setAttribute('x2', x2); b.line.setAttribute('y2', y2);
-        const mx = x1 + (x2 - x1) * 0.6, my = y1 + (y2 - y1) * 0.6;
-        const nx = -dy / d, ny = dx / d;
-        b.label.setAttribute('transform', `translate(${mx + nx * 16},${my + ny * 16 - 4})`);
+        const ox = b.from.x, oy = b.from.y;
+        let dx = b.to.x - ox, dy = b.to.y - oy; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+        const tx = dx > 0 ? (rect.x1 - ox) / dx : dx < 0 ? (rect.x0 - ox) / dx : Infinity;
+        const ty = dy > 0 ? (rect.y1 - oy) / dy : dy < 0 ? (rect.y0 - oy) / dy : Infinity;
+        const tEdge = Math.max(40, Math.min(tx, ty));
+        const ex = ox + dx * tEdge, ey = oy + dy * tEdge;
+        b.line.setAttribute('x1', ox + dx * (b.from.r + 12)); b.line.setAttribute('y1', oy + dy * (b.from.r + 12));
+        b.line.setAttribute('x2', ex); b.line.setAttribute('y2', ey);
+        const hitX = tx < ty; // which edge the arrow reaches
+        const anchor = hitX ? (dx > 0 ? 'end' : 'start') : 'middle';
+        const lx = hitX ? ex - dx * 14 * graph.scale : ex, ly = hitX ? ey + 4 * graph.scale : ey + (dy > 0 ? -18 : 24) * graph.scale;
+        b.label.setAttribute('text-anchor', anchor);
+        b.label.setAttribute('transform', `translate(${lx},${ly})`);
       });
 
       graph.particles.forEach((p) => {
