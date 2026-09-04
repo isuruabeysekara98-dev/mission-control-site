@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/styles.css" />
+  <link rel="stylesheet" href="/src/atlas.css" />
 </head>
 <body>
 
@@ -181,54 +182,6 @@
     </div>
   </section>
 
-  <!-- ============ 2 PLATFORM ============ -->
-  <section id="platform" class="section-pad section-line">
-    <div class="wrap">
-      <div class="eyebrow reveal">Platform</div>
-      <h2 class="section-h reveal">The operating picture of your <span class="kw">firm</span></h2>
-      <p class="section-sub reveal">Three capabilities, one living system — from silent observation to a context graph to foresight on drift.</p>
-
-      <div class="platform-block">
-        <div class="p-copy reveal">
-          <h3>Scan — the drop that listens</h3>
-          <p>One lightweight observer lands in your environment and disperses across the organization. Every system your firm touches is heard — passively, in your perimeter, at no time cost to your team.</p>
-          <ul class="plist">
-            <li>Zero-integration capture — nothing to wire up</li>
-            <li>In-environment processing — data stays inside</li>
-            <li>Set up in days, invisible from day one</li>
-          </ul>
-        </div>
-        <canvas id="scan-canvas" class="reveal" aria-hidden="true"></canvas>
-      </div>
-
-      <div class="platform-block">
-        <div class="p-copy reveal">
-          <h3>Map — the brain inside the organization</h3>
-          <p>Observations condense into the Context Graph — a living model of how your firm actually operates, forming at the center of the org and reorganizing as every new observation lands.</p>
-          <ul class="plist">
-            <li>Every variant, exception, and workaround captured</li>
-            <li>Updates continuously as your practice evolves</li>
-            <li>Every node traces back to observed work</li>
-          </ul>
-        </div>
-        <canvas id="map-canvas" class="reveal" aria-hidden="true"></canvas>
-      </div>
-
-      <div class="platform-block">
-        <div class="p-copy reveal">
-          <h3>Analyze — building on the common path</h3>
-          <p>The graph reveals the common path through every matter, scores each fork, and flags where the next deviation is likely — before it becomes drift.</p>
-          <ul class="plist">
-            <li>Common path and branch statistics at every fork</li>
-            <li>Deviation heat, scaled to frequency</li>
-            <li>Forecast markers where drift is predicted next</li>
-          </ul>
-        </div>
-        <canvas id="analyze-canvas" class="reveal" aria-hidden="true"></canvas>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ 2d TRUST ============ -->
   <section id="trust" class="section-pad">
     <div class="wrap">
@@ -273,67 +226,7 @@
     </div>
   </section>
 
-  <!-- ============ 3 TRY ============ -->
-  <section id="try" class="section-pad section-line">
-    <div class="wrap">
-      <div class="eyebrow reveal">Try it out</div>
-      <h2 class="section-h reveal">A firm's operational picture, <span class="kw">live</span></h2>
-      <p class="section-sub reveal">The operating view Mission Control builds — shown here for Harden &amp; Wyse LLP, a demonstration firm. Everything you currently know about how your firm runs reaches you through the billing cycle, three to eight weeks late. This view is now.</p>
-      <div class="demo-frame scan-frame framed reveal">
-        <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-        <div class="ops-board" role="img" aria-label="Live operational dashboard for a fictional demonstration law firm">
-          <div class="ops-head">
-            <span class="ops-live"><i class="ops-dot"></i>HARDEN &amp; WYSE LLP — NOW</span>
-            <span class="ops-clock" id="ops-clock">TUE 15:07</span>
-          </div>
-          <div class="ops-counters">
-            <div class="ops-counter"><strong>412</strong><span>Matters live</span></div>
-            <div class="ops-counter"><strong>78%</strong><span>Capacity committed</span></div>
-            <div class="ops-counter risk"><strong>7</strong><span>Matters at risk</span></div>
-            <div class="ops-counter"><strong id="ops-unrecorded">$96,412</strong><span>Unrecorded today</span></div>
-          </div>
-          <div class="ops-label">Live matters — by budget consumed</div>
-          <div class="ops-rows" id="ops-rows">
-            <div class="ops-row breach">
-              <span class="ops-name">Meridian / arbitration</span>
-              <span class="ops-bar"><i style="--w:91%"></i></span>
-              <span class="ops-pct">91%</span>
-              <span class="ops-status">Breach Thu</span>
-            </div>
-            <div class="ops-row watch">
-              <span class="ops-name">Calder acquisition</span>
-              <span class="ops-bar"><i style="--w:67%"></i></span>
-              <span class="ops-pct">67%</span>
-              <span class="ops-status">Watch</span>
-            </div>
-            <div class="ops-row">
-              <span class="ops-name">Nord Rail / defence</span>
-              <span class="ops-bar"><i style="--w:45%"></i></span>
-              <span class="ops-pct">45%</span>
-              <span class="ops-status">On track</span>
-            </div>
-            <div class="ops-row">
-              <span class="ops-name">Peralta estate</span>
-              <span class="ops-bar"><i style="--w:22%"></i></span>
-              <span class="ops-pct">22%</span>
-              <span class="ops-status">On track</span>
-            </div>
-          </div>
-          <div class="ops-alert">
-            <i class="ops-dot alert"></i>
-            <div>
-              <strong>Fee cap breach projected — Thursday, 09:00</strong>
-              <span>Meridian / arbitration · $180k cap · $164k consumed · 3 timekeepers active now</span>
-              <em>Detected 11 days before the invoice would have shown it</em>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="demo-note reveal">Harden &amp; Wyse LLP and all figures are illustrative. <a class="demo-cta" href="#try">Request a demo</a> to see this view built on your firm.</p>
-    </div>
-  </section>
-
-  <!-- ============ 4 ABOUT ============ -->
+  <!-- ============ 4 WHO WE ARE ============ -->
   <section id="about" class="section-pad section-line">
     <div class="wrap">
       <div class="eyebrow reveal">Who we are</div>
@@ -346,25 +239,39 @@
         </div>
       </div>
       <div class="team-grid">
-        <article class="team-card scan-frame reveal" style="--reveal-delay:0.05s">
+        <article class="team-card scan-frame framed reveal" style="--reveal-delay:0.05s">
           <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-          <div class="team-portrait" aria-hidden="true">AH</div>
-          <h4>Abdurrahman Haroon</h4>
-          <p class="team-role">Co-founder</p>
-          <p>Builds the operational foundations legal teams run on — turning strategic objectives into structured, repeatable systems designed for real-world conditions, so firms expand delivery without adding friction.</p>
+          <figure class="team-photo"><img src="/team/abdurrahman.webp" alt="Abdurrahman Haroon, co-founder of LexOps" loading="lazy" /></figure>
+          <div class="team-copy">
+            <h4>Abdurrahman Haroon</h4>
+            <p class="team-role">Co-founder</p>
+            <p>Builds the operational foundations legal teams run on — turning strategic objectives into structured, repeatable systems designed for real-world conditions, so firms expand delivery without adding friction.</p>
+          </div>
         </article>
-        <article class="team-card scan-frame reveal" style="--reveal-delay:0.15s">
+        <article class="team-card scan-frame framed reveal" style="--reveal-delay:0.15s">
           <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-          <div class="team-portrait" aria-hidden="true">AS</div>
-          <h4>Amresh Selvaskandan</h4>
-          <p class="team-role">Co-founder</p>
-          <p>Works at the intersection of legal practice and operational strategy — partnering with clients on workflow and infrastructure design, hands-on through implementation rather than handing over a report.</p>
+          <figure class="team-photo"><img src="/team/amresh.webp" alt="Amresh Selvaskandan, co-founder of LexOps" loading="lazy" /></figure>
+          <div class="team-copy">
+            <h4>Amresh Selvaskandan</h4>
+            <p class="team-role">Co-founder</p>
+            <p>Works at the intersection of legal practice and operational strategy — partnering with clients on workflow and infrastructure design, hands-on through implementation rather than handing over a report.</p>
+          </div>
         </article>
       </div>
-      <div class="about-proof reveal">
-        <span class="proof-label">Backed by Team Squared · Trusted by</span>
-        <div class="proof-marks">
-          <span>Betts Law Co</span><span>Attune Legal</span><span>Warlows Legal</span><span>Palmos Legal</span>
+    </div>
+    <div class="clients reveal">
+      <div class="wrap"><span class="proof-label">Backed by Team Squared · Trusted by the firms we work with</span></div>
+      <div class="logo-ribbon" aria-label="Client law firms">
+        <div class="logo-fade l" aria-hidden="true"></div>
+        <div class="logo-fade r" aria-hidden="true"></div>
+        <div class="logo-track" id="logo-track">
+          <img src="/clients/betts-law-co.webp" alt="Betts Law Co" />
+          <img src="/clients/stainton-chellew.webp" alt="Stainton-Chellew" />
+          <img src="/clients/attune-legal.webp" alt="Attune Legal" />
+          <img src="/clients/warlows-legal.webp" alt="Warlows Legal" />
+          <img src="/clients/palmos-legal.webp" alt="Palmos Legal" />
+          <img src="/clients/client-06.webp" alt="NFM Agency" class="inv" />
+          <img src="/clients/client-07.webp" alt="Law Ninjas" />
         </div>
       </div>
     </div>
@@ -378,6 +285,140 @@
   </section>
 
 </main>
+
+<!-- ============ VIEW · PLATFORM (opens from the nav) ============ -->
+<section id="platform" class="view" aria-label="Platform">
+  <div class="wrap view-head">
+    <a class="view-back" href="#hero">← Back to overview</a>
+    <div class="eyebrow reveal">Platform</div>
+    <h2 class="section-h reveal">The operating picture of your <span class="kw">firm</span></h2>
+    <p class="section-sub reveal">Three capabilities, one living system — from silent observation to a context graph to foresight on drift.</p>
+  </div>
+  <div class="wrap">
+    <div class="platform-block">
+      <div class="p-copy reveal">
+        <h3>Scan — the drop that listens</h3>
+        <p>One lightweight observer lands in your environment and disperses across the organization. Every system your firm touches is heard — passively, in your perimeter, at no time cost to your team.</p>
+        <ul class="plist">
+          <li>Zero-integration capture — nothing to wire up</li>
+          <li>In-environment processing — data stays inside</li>
+          <li>Set up in days, invisible from day one</li>
+        </ul>
+      </div>
+      <canvas id="scan-canvas" class="reveal" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="platform-block">
+      <div class="p-copy reveal">
+        <h3>Map — the brain inside the organization</h3>
+        <p>Observations condense into the Context Graph — a living model of how your firm actually operates, forming at the center of the org and reorganizing as every new observation lands.</p>
+        <ul class="plist">
+          <li>Every variant, exception, and workaround captured</li>
+          <li>Updates continuously as your practice evolves</li>
+          <li>Every node traces back to observed work</li>
+        </ul>
+      </div>
+      <canvas id="map-canvas" class="reveal" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="platform-block">
+      <div class="p-copy reveal">
+        <h3>Analyze — building on the common path</h3>
+        <p>The graph reveals the common path through every matter, scores each fork, and flags where the next deviation is likely — before it becomes drift.</p>
+        <ul class="plist">
+          <li>Common path and branch statistics at every fork</li>
+          <li>Deviation heat, scaled to frequency</li>
+          <li>Forecast markers where drift is predicted next</li>
+        </ul>
+      </div>
+      <canvas id="analyze-canvas" class="reveal" aria-hidden="true"></canvas>
+    </div>
+  </div>
+  <div class="view-foot">
+    <div class="wrap">
+      <a class="btn btn-primary" href="#try">See it on a real organisation →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW · TRY IT OUT — Process Atlas (Teams Squared) ============ -->
+<section id="try" class="view" aria-label="Try it out">
+  <div class="wrap view-head compact">
+    <a class="view-back" href="#hero">← Back to overview</a>
+    <div class="eyebrow">Try it out</div>
+    <h2 class="section-h">Teams Squared, as a <span class="kw">context graph</span></h2>
+    <p class="section-sub">The real map of one organisation — departments, workflows, the people and tools that bind them into a mesh. Drag any node. Double-click a department to see its workflows; open one and zoom from the common path to every traversal.</p>
+  </div>
+
+  <div class="atlas" id="atlas">
+    <div class="atlas-bar">
+      <div class="atlas-brand">
+        <span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <div>
+          <div class="atlas-brand-name">Process Atlas</div>
+          <div class="atlas-brand-sub">Teams Squared</div>
+        </div>
+      </div>
+      <nav class="crumbs" id="crumbs" aria-label="Atlas breadcrumb"></nav>
+      <div class="atlas-pill"><span class="dot"></span> Live process mining</div>
+    </div>
+
+    <section class="aview" id="view-graph">
+      <svg id="graph-svg" role="img" aria-label="Force-directed organisation graph"></svg>
+      <aside class="graph-side">
+        <div class="gs-label">Departments</div>
+        <nav class="gs-list" id="gs-list"></nav>
+        <div class="gs-foot">Or double-click any node on the map · drag to rearrange</div>
+      </aside>
+      <div class="graph-legend">
+        <div class="legend-row"><span class="legend-swatch" style="background:#0a1406;border:1.5px solid #84ee64"></span> Department</div>
+        <div class="legend-row"><span class="legend-swatch" style="background:#8b5cf6"></span> Workflow</div>
+        <div class="legend-row"><span class="legend-swatch" style="background:#c8ccc7"></span> Person</div>
+        <div class="legend-row"><span class="legend-swatch" style="background:#f0a44a"></span> Shared tool</div>
+        <div class="legend-note"><strong>No central node</strong> — shared people and tools bind the departments into one mesh.</div>
+      </div>
+    </section>
+
+    <section class="aview" id="view-dept">
+      <div class="dept-wrap">
+        <div class="dept-head">
+          <div>
+            <div class="dept-eyebrow" id="dept-lead"></div>
+            <h3 class="dept-title" id="dept-title"></h3>
+            <p class="dept-blurb" id="dept-blurb"></p>
+          </div>
+        </div>
+        <div class="wf-grid" id="wf-grid"></div>
+      </div>
+    </section>
+
+    <div class="g-tooltip" id="g-tooltip"></div>
+
+    <div id="focus-overlay">
+      <div class="focus-window" role="dialog" aria-modal="true" aria-labelledby="focus-title">
+        <div class="focus-head">
+          <div class="focus-titleblock">
+            <div class="focus-eyebrow" id="focus-eyebrow"></div>
+            <div class="focus-title" id="focus-title"></div>
+          </div>
+          <button class="focus-close" id="focus-close" title="Close (Esc)" aria-label="Close">✕</button>
+        </div>
+        <div class="focus-body">
+          <aside class="focus-rail" id="focus-rail"></aside>
+          <div class="process-scroll" id="process-scroll">
+            <div class="process-stage" id="process-stage"></div>
+          </div>
+          <div class="zoom-dock" role="group" aria-label="Detail level">
+            <button class="zoom-btn" id="zoom-out" title="Less detail (−)">−</button>
+            <div class="zoom-segs" id="zoom-segs"></div>
+            <button class="zoom-btn" id="zoom-in" title="More detail (+)">+</button>
+          </div>
+          <div class="detail-panel" id="detail-panel"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <footer>
   <div class="wrap">

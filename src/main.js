@@ -1,7 +1,29 @@
 /* Mission Control — interaction layer */
 import { initBrain } from './brain.js';
+import { initAtlas } from './atlas.js';
 
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- views: Platform / Try it out open from the nav ---------------- */
+const VIEW_IDS = ['platform', 'try'];
+let atlasReady = false;
+function route() {
+  const id = location.hash.slice(1);
+  const isView = VIEW_IDS.includes(id);
+  const wasView = Boolean(document.body.dataset.view);
+  document.querySelectorAll('.view').forEach((v) => v.classList.toggle('active', v.id === id));
+  if (isView) document.body.dataset.view = id; else delete document.body.dataset.view;
+  document.querySelectorAll('.nav-links a').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+  if (isView) {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (id === 'try' && !atlasReady) { atlasReady = true; initAtlas(document.getElementById('try')); }
+  } else if (id && wasView) {
+    // main was hidden when the hash changed, so the browser could not scroll to it
+    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: 'instant' }));
+  }
+}
+window.addEventListener('hashchange', route);
+route();
 
 const C = {
   bg: '#000000',
@@ -595,42 +617,12 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
 });
 
 /* ================================================================
-   TRY — live ops board (fictional Harden & Wyse instrument)
+   MARQUEES — duplicate tracks for seamless -50% loops
    ================================================================ */
-(function opsBoard() {
-  const board = document.querySelector('.ops-board');
-  if (!board) return;
-  // live clock
-  const clock = document.getElementById('ops-clock');
-  const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  const tickClock = () => {
-    const d = new Date();
-    clock.textContent = `${DAYS[d.getDay()]} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  };
-  tickClock();
-  if (!REDUCED) setInterval(tickClock, 5000);
-  // unrecorded-value counter ticks upward — the "live instrument" tell
-  const unrec = document.getElementById('ops-unrecorded');
-  let unrecVal = 96412;
-  if (!REDUCED) setInterval(() => {
-    unrecVal += 7 + Math.floor(Math.random() * 22);
-    unrec.textContent = `$${unrecVal.toLocaleString('en-US')}`;
-  }, 2600);
-  // bars fill when board scrolls into view
-  new IntersectionObserver(([e], io) => {
-    if (e.isIntersecting) { board.classList.add('ops-on'); io.disconnect(); }
-  }, { threshold: 0.3 }).observe(board);
-  if (REDUCED) board.classList.add('ops-on');
-})();
-
-/* ================================================================
-   PRIVACY — duplicate track for seamless -50% loop
-   ================================================================ */
-(function privacy() {
-  const track = document.getElementById('priv-track');
-  if (!track) return;
-  track.innerHTML += track.innerHTML;
-})();
+for (const id of ['priv-track', 'logo-track']) {
+  const track = document.getElementById(id);
+  if (track) track.innerHTML += track.innerHTML;
+}
 
 /* ================================================================
    HERO BRAIN
