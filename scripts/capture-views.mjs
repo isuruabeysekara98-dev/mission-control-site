@@ -43,17 +43,33 @@ await shot('view-try-graph');
 await page.evaluate(() => document.getElementById('atlas').scrollIntoView({ behavior: 'instant' }));
 await page.waitForTimeout(600);
 await shot('view-try-atlas');
-await page.click('#gs-list .gs-item');
+await page.click('#gs-list .gs-item');          // department deep-dive
+await page.waitForTimeout(2200);
+await shot('view-try-dept-focus');
+await page.click('#gs-list .gs-sub .gs-wf');     // sticky workflow focus
 await page.waitForTimeout(900);
-await shot('view-try-dept');
-await page.click('.wf-card');
-await page.waitForTimeout(900);
+await shot('view-try-wf-focus');
+await page.click('#chip-open');                   // open the workflow IDE
+await page.waitForTimeout(1200);
 await shot('view-try-workflow');
 await page.click('#zoom-segs .zoom-seg[data-z="3"]');
 await page.waitForTimeout(700);
-await page.click('#pmap .p-node');
+await page.click('#pmap .p-node[data-step="1"]');
 await page.waitForTimeout(600);
-await shot('view-try-workflow-zoom3');
+await shot('view-try-workflow-inspector');
+await page.click('#focus-rail .rel-item');       // connect a related workflow
+await page.waitForTimeout(1200);
+await page.evaluate(() => { const s = document.getElementById('process-scroll'); s.scrollLeft = 260; });
+await page.waitForTimeout(400);
+await shot('view-try-workflow-connected');
+const ide = await page.evaluate(() => ({
+  pulses: document.querySelectorAll('#p-flow .p-pulse').length,
+  lanes: document.querySelectorAll('#pmap .p-lane').length,
+  influence: document.querySelectorAll('#pmap .p-edge.influence').length,
+  stamps: document.querySelectorAll('#pmap .p-node:not(.lane) .n-time').length,
+  bridgesAtDeptFocus: null,
+}));
+console.log('IDE:', JSON.stringify(ide), '(expect pulses>0, lanes=1, influence>0, stamps=steps)');
 
 // nav round trip: view → landing anchor must land on the section
 await page.keyboard.press('Escape');

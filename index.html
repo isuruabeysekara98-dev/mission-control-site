@@ -386,21 +386,10 @@
         <div class="legend-row"><span class="legend-swatch" style="background:#8b5cf6"></span> Workflow</div>
         <div class="legend-row"><span class="legend-swatch" style="background:#c8ccc7"></span> Person</div>
         <div class="legend-row"><span class="legend-swatch" style="background:#f0a44a"></span> Shared tool</div>
-        <div class="legend-note"><strong>No central node</strong> — shared people and tools bind the departments into one mesh.</div>
+        <div class="legend-note"><strong>No central node</strong> — shared people and tools bind the departments into one mesh. Click a department to deep-dive; click a workflow to focus it.</div>
       </div>
-    </section>
-
-    <section class="aview" id="view-dept">
-      <div class="dept-wrap">
-        <div class="dept-head">
-          <div>
-            <div class="dept-eyebrow" id="dept-lead"></div>
-            <h3 class="dept-title" id="dept-title"></h3>
-            <p class="dept-blurb" id="dept-blurb"></p>
-          </div>
-        </div>
-        <div class="wf-grid" id="wf-grid"></div>
-      </div>
+      <div class="graph-focus-head" id="graph-focus-head" aria-live="polite"></div>
+      <div class="graph-wf-chip" id="graph-wf-chip"></div>
     </section>
 
     <div class="g-tooltip" id="g-tooltip"></div>
@@ -412,6 +401,10 @@
             <div class="focus-eyebrow" id="focus-eyebrow"></div>
             <div class="focus-title" id="focus-title"></div>
           </div>
+          <div class="focus-chips" id="focus-chips" aria-label="Connected workflows"></div>
+          <button class="live-toggle" id="live-toggle" title="Pause / resume live case flow">
+            <i class="lt-dot"></i><span class="lt-label">Live</span><span class="lt-count"><b id="live-count">0</b> in flight</span>
+          </button>
           <button class="focus-close" id="focus-close" title="Close (Esc)" aria-label="Close">✕</button>
         </div>
         <div class="focus-body">
