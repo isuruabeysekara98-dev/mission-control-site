@@ -23,8 +23,13 @@ await page.evaluate(() => window.scrollBy(0, 900));
 await page.waitForTimeout(1200);
 await shot('view-platform-scan');
 
+await page.evaluate(() => document.getElementById('trust').scrollIntoView({ block: 'center', behavior: 'instant' }));
+await page.waitForTimeout(1200);
+await shot('view-platform-trust');
+
 await page.goto(base + '/#about', { waitUntil: 'networkidle' });
 await page.waitForTimeout(1500);
+await shot('view-about-top');
 await page.evaluate(() => document.querySelector('.team-grid').scrollIntoView({ block: 'center', behavior: 'instant' }));
 await page.waitForTimeout(1200);
 await shot('about-team');
@@ -55,10 +60,18 @@ await page.keyboard.press('Escape');
 await page.waitForTimeout(400);
 await page.click('.nav-links a[href="#about"]');
 await page.waitForTimeout(800);
-const aboutTop = await page.evaluate(() => Math.round(document.getElementById('about').getBoundingClientRect().top));
+const aboutState = await page.evaluate(() => ({
+  view: document.body.dataset.view,
+  mainHidden: getComputedStyle(document.querySelector('main')).display === 'none',
+  trustInMain: Boolean(document.querySelector('main #trust')),
+}));
+await page.click('.view-back');
+await page.waitForTimeout(800);
+const backState = await page.evaluate(() => ({ view: document.body.dataset.view || null, scrollY: Math.round(scrollY) }));
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 
 await browser.close();
-console.log(`about top after nav: ${aboutTop}px (expect ~0–70)`);
+console.log('about view:', JSON.stringify(aboutState), '(expect view=about, mainHidden=true, trustInMain=false)');
+console.log('back to overview:', JSON.stringify(backState), '(expect view=null, scrollY≈0)');
 console.log(overflow ? 'HORIZONTAL OVERFLOW' : 'no overflow');
 console.log(errors.length ? `ERRORS:\n${errors.join('\n')}` : 'CLEAN');

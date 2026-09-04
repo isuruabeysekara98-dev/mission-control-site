@@ -166,6 +166,9 @@ body[data-view] main, body[data-view] footer { display: none; }
 .view-back:hover { color: var(--accent); }
 .view-foot { border-top: 1px solid var(--border); padding: 64px 0 120px; text-align: center; }
 #platform .platform-block:first-child { border-top: 0; padding-top: 48px; }
+#platform #trust { margin-top: 40px; }
+#about.view .story { margin-top: 0; }
+#about.view .view-foot { margin-top: 0; }
 
 /* ---------- hero ---------- */
 #hero {

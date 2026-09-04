@@ -5,7 +5,7 @@ import { initAtlas } from './atlas.js';
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------------- views: Platform / Try it out open from the nav ---------------- */
-const VIEW_IDS = ['platform', 'try'];
+const VIEW_IDS = ['platform', 'try', 'about'];
 let atlasReady = false;
 function route() {
   const id = location.hash.slice(1);
