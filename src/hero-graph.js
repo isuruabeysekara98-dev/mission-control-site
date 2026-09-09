@@ -29,13 +29,13 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
   const layout = () => {
     W = svg.clientWidth; H = svg.clientHeight;
     const wide = W > 960;
-    cx = wide ? W * 0.68 : W * 0.5; cy = wide ? H * 0.5 : H * 0.62;
+    cx = wide ? W * 0.68 : W * 0.5; cy = wide ? H * 0.5 : H * 0.5;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   };
   layout();
   if (W < 2 || H < 2) { setTimeout(() => initHeroGraph(svg, { reduced, onInteractive }), 150); return; }
 
-  const spread = Math.min(W, H) * 0.32;
+  const spread = Math.min(W, H) * (W > 960 ? 0.32 : 0.36);
   const depts = live.filter((n) => n.kind === 'dept');
   depts.forEach((d, i) => { const a = (i / depts.length) * Math.PI * 2 - Math.PI / 2; d.x = cx + Math.cos(a) * spread; d.y = cy + Math.sin(a) * spread * 0.9; });
   live.forEach((n) => {
@@ -109,8 +109,8 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
       n.vx *= 0.85; n.vy *= 0.85;
       const sp = Math.hypot(n.vx, n.vy); if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
       n.x += n.vx; n.y += n.vy;
-      const m = n.r + 16;
-      n.x = Math.max(m, Math.min(W - m, n.x)); n.y = Math.max(m + 70, Math.min(H - m - 40, n.y));
+      const m = n.r + 16, top = W > 960 ? 70 : 24, bottom = W > 960 ? 40 : 24;
+      n.x = Math.max(m, Math.min(W - m, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
     });
   }
   function draw() {
