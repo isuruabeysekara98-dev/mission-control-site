@@ -5,14 +5,30 @@
 /* the Try view fills exactly one screen: header on top, atlas takes the rest */
 #try.active { display: flex; flex-direction: column; height: 100vh; }
 #try .view-head { flex: none; width: 100%; }
+/* The atlas is the product instrument: it keeps its own dark palette regardless of the page theme.
+   Every rule below reads these scoped tokens; the focus window and tooltip live inside .atlas so they inherit them. */
 .atlas {
+  --bg-0: #000000;
+  --bg-1: #141614;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text-hi: #f4f5f3;
+  --text-mid: #c8ccc7;
+  --text-lo: #8a9088;
+  --accent: #84ee64;
+  --accent-dim: rgba(132, 238, 100, 0.14);
+  --accent-ink: #0a1406;
+  --glow-violet: #8b5cf6;
+  --amber: #f0a44a;
   position: relative;
   flex: 1;
   min-height: 560px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(11, 17, 10, 0.12);
   overflow: hidden;
   background: var(--bg-0);
+  color: var(--text-hi);
 }
+.atlas p { color: var(--text-lo); }
 .atlas button { font-family: var(--font-body); cursor: pointer; border: none; background: none; color: inherit; }
 
 /* ---------- atlas bar ---------- */
@@ -306,7 +322,9 @@
 @keyframes bridge-flow { to { stroke-dashoffset: -18; } }
 .g-bridge-label { font-family: var(--font-body); font-size: calc(11px * var(--zs, 1)); fill: var(--text-hi); pointer-events: none; }
 .g-bridge-label .sub { fill: var(--text-lo); font-size: calc(9.5px * var(--zs, 1)); }
-#view-graph.focused .g-link { stroke: rgba(255,255,255,0.2); }
+/* in a deep-dive the mesh lines go away entirely; only a focused workflow's own links come back */
+#view-graph.focused .g-link:not(.hl) { opacity: 0; }
+#view-graph.focused .g-link.hl { opacity: 1; stroke: rgba(132,238,100,0.75); }
 
 .graph-focus-head {
   position: absolute; top: 24px; right: 24px; transform: translateY(-10px);

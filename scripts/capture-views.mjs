@@ -46,11 +46,12 @@ await shot('view-try-atlas');
 await page.click('#gs-list .gs-item');          // department deep-dive
 await page.waitForTimeout(2200);
 await shot('view-try-dept-focus');
-await page.click('#gs-list .gs-sub .gs-wf');     // sticky workflow focus
-await page.waitForTimeout(900);
-await shot('view-try-wf-focus');
-await page.click('#chip-open');                   // open the workflow IDE
+const focusLinks = await page.evaluate(() => [...document.querySelectorAll('#graph-svg .g-link')].filter((l) => getComputedStyle(l).opacity !== '0').length);
+console.log('visible mesh lines in deep-dive:', focusLinks, '(expect 0)');
+await page.click('#gs-list .gs-sub .gs-wf');     // one click opens the workflow IDE
 await page.waitForTimeout(1200);
+const opened = await page.evaluate(() => document.getElementById('focus-overlay').classList.contains('active'));
+console.log('workflow opened on click:', opened, '(expect true)');
 await shot('view-try-workflow');
 await page.click('#zoom-segs .zoom-seg[data-z="3"]');
 await page.waitForTimeout(700);

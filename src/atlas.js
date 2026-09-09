@@ -55,7 +55,7 @@ export function initAtlas(root) {
      Crumbs
      ================================================================ */
   function setCrumbs() {
-    const parts = [{ label: 'Teams Squared', go: state.dept ? clearFocus : null }];
+    const parts = [{ label: 'All departments', go: state.dept ? clearFocus : null }];
     if (state.dept) parts.push({ label: state.dept.name, go: state.wf || state.open ? () => { closeFocus(); selectWf(null); } : null });
     if (state.wf && !state.open) parts.push({ label: state.wf.name });
     if (state.open) parts.push({ label: state.open.name });
@@ -83,7 +83,7 @@ export function initAtlas(root) {
             <button class="gs-wf" data-w="${w.id}">
               <span class="gs-wf-code">${w.code}</span>
               <span class="gs-wf-name">${w.name}</span>
-              <span class="gs-open" title="Open workflow">→</span>
+              <span class="gs-open" aria-hidden="true">→</span>
             </button>`).join('')}
         </div>
       </div>`).join('');
@@ -91,10 +91,10 @@ export function initAtlas(root) {
       const d = ATLAS.departments.find((x) => x.id === b.dataset.d);
       state.dept === d ? clearFocus() : focusDept(d);
     }));
-    $$('#gs-list .gs-wf').forEach((b) => b.addEventListener('click', (e) => {
+    // one click on a workflow opens it — focusing it in the graph on the way
+    $$('#gs-list .gs-wf').forEach((b) => b.addEventListener('click', () => {
       const wf = ALL_WF.find((w) => w.id === b.dataset.w);
-      if (e.target.classList.contains('gs-open')) { selectWf(wf); openWorkflow(wf); return; }
-      state.wf === wf ? selectWf(null) : selectWf(wf);
+      selectWf(wf); openWorkflow(wf);
     }));
   }
   function syncSidebar() {
@@ -213,7 +213,7 @@ export function initAtlas(root) {
         const kindLabel = { dept: 'Department', wf: 'Workflow', person: n.ref.role || 'Team member', tool: 'Shared tool' }[n.kind];
         tooltip.innerHTML = `<div class="tt-title">${n.label}</div><div class="tt-sub">${kindLabel}</div>` +
           (n.kind === 'dept' ? '<div class="tt-cta">Click to deep-dive this department →</div>' : '') +
-          (n.kind === 'wf' ? '<div class="tt-cta">Click to focus · double-click to open →</div>' : '');
+          (n.kind === 'wf' ? '<div class="tt-cta">Click to open this workflow →</div>' : '');
         tooltip.style.opacity = 1;
       });
       g.addEventListener('mousemove', (e) => { tooltip.style.left = e.clientX + 16 + 'px'; tooltip.style.top = e.clientY + 8 + 'px'; });
@@ -224,9 +224,9 @@ export function initAtlas(root) {
       g.addEventListener('click', (e) => {
         e.stopPropagation();
         if (n.kind === 'dept') { state.dept === n.ref ? null : focusDept(n.ref); }
-        if (n.kind === 'wf') { state.wf === n.ref ? selectWf(null) : selectWf(n.ref); }
+        if (n.kind === 'wf') { selectWf(n.ref); openWorkflow(n.ref); }
       });
-      g.addEventListener('dblclick', (e) => { e.stopPropagation(); if (n.kind === 'wf') { selectWf(n.ref); openWorkflow(n.ref); } });
+      g.addEventListener('dblclick', (e) => e.stopPropagation());
 
       let drag = null;
       g.addEventListener('pointerdown', (e) => { drag = { sx: n.x, sy: n.y, cx: e.clientX, cy: e.clientY }; n.fixed = true; g.setPointerCapture(e.pointerId); graph.heat = 0.12; e.stopPropagation(); });

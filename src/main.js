@@ -1,5 +1,5 @@
 /* Mission Control — interaction layer */
-import { initBrain } from './brain.js';
+import { initHeroGraph } from './hero-graph.js';
 import { initAtlas } from './atlas.js';
 
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,18 +25,21 @@ function route() {
 window.addEventListener('hashchange', route);
 route();
 
+/* canvas palette — mirrors the light tokens in styles.css */
 const C = {
-  bg: '#000000',
-  bg1: '#141614',
-  border: 'rgba(255,255,255,0.09)',
-  borderStrong: 'rgba(255,255,255,0.16)',
-  hi: '#f4f5f3',
-  mid: '#c8ccc7',
-  lo: '#8a9088',
-  accent: '#84ee64',
-  accentDim: 'rgba(132,238,100,0.14)',
-  violet: '#8b5cf6',
-  amber: '#f0a44a',
+  bg: '#ffffff',
+  bg1: '#f4f6f2',
+  panel: '#ffffff',
+  border: 'rgba(11,17,10,0.10)',
+  borderStrong: 'rgba(11,17,10,0.2)',
+  hi: '#0b110a',
+  mid: '#39423a',
+  lo: '#66706a',
+  accent: '#1f9d45',
+  accentBright: '#84ee64',
+  accentDim: 'rgba(31,157,69,0.10)',
+  violet: '#7c3aed',
+  amber: '#d98a1e',
 };
 
 /* ---------------- scroll reveal ---------------- */
@@ -216,16 +219,51 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
     return [pad + GN[i][0] * (W - pad * 2), pad + GN[i][1] * (H - pad * 2)];
   }
 
+  /* LISTEN — people speak, and what we hear becomes the brief */
+  const LISTEN_PEOPLE = [[0.17, 0.26], [0.17, 0.5], [0.17, 0.74]];
+  const LISTEN_NOTES = ['where the work snags', 'the workaround everyone uses', 'the hand-off nobody wrote down', 'what actually takes the time'];
+  function drawListen(ctx, W, H, p, t) {
+    label(ctx, 'WHAT WE LISTEN FOR', W * 0.4, H * 0.1, C.lo, 10);
+    LISTEN_PEOPLE.forEach(([px, py], i) => {
+      const x = px * W, y = py * H, ap = ease(p * 3 - i * 0.45);
+      if (ap <= 0) return;
+      for (let r = 0; r < 3; r++) {
+        const rp = (t * 0.42 + i * 0.3 + r * 0.33) % 1;
+        ctx.strokeStyle = C.accent; ctx.globalAlpha = ap * (1 - rp) * 0.45;
+        ctx.beginPath(); ctx.arc(x, y, 9 + rp * 44, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.globalAlpha = ap;
+      ctx.fillStyle = C.panel; ctx.strokeStyle = C.mid; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 1; ctx.globalAlpha = 1;
+    });
+    const nx = W * 0.4, nw = W * 0.55;
+    LISTEN_NOTES.forEach((n, i) => {
+      const ap = ease(p * 2.6 - 0.5 - i * 0.42);
+      if (ap <= 0) return;
+      const y = H * 0.24 + i * H * 0.19;
+      const [px, py] = LISTEN_PEOPLE[i % LISTEN_PEOPLE.length];
+      ctx.strokeStyle = C.accent; ctx.globalAlpha = ap * 0.3;
+      ctx.beginPath(); ctx.moveTo(px * W + 9, py * H); ctx.lineTo(nx, y); ctx.stroke();
+      ctx.globalAlpha = ap;
+      ctx.fillStyle = C.panel; ctx.fillRect(nx, y - 17, nw, 34);
+      ctx.strokeStyle = C.border; ctx.strokeRect(nx, y - 17, nw, 34);
+      bracket(ctx, nx - 5, y - 22, nw + 10, 44, 9, C.accent, ap);
+      label(ctx, n, nx + 16, y + 4, C.hi, 12);
+      ctx.globalAlpha = 1;
+    });
+  }
+
   function drawScan(ctx, W, H, p, t) {
     // dimmed workspace panels
     for (const pl of workPanels) {
       const x = pl.x * W, y = pl.y * H, w = pl.w * W, h = pl.h * H;
-      ctx.fillStyle = C.bg1;
+      ctx.fillStyle = C.panel;
       ctx.fillRect(x, y, w, h);
       ctx.strokeStyle = C.border;
       ctx.strokeRect(x, y, w, h);
       // fake content lines
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillStyle = 'rgba(11,17,10,0.07)';
       for (let li = 0; li < Math.floor(h / 22) - 1; li++) {
         ctx.fillRect(x + 12, y + 14 + li * 22, w * (0.5 + ((li * 37) % 40) / 100), 6);
       }
@@ -242,10 +280,10 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
     // scan beam
     const bx = ((t * 0.14) % 1.3 - 0.15) * W;
     const grad = ctx.createLinearGradient(bx - 50, 0, bx + 50, 0);
-    grad.addColorStop(0, 'rgba(132,238,100,0)');
-    grad.addColorStop(0.45, 'rgba(132,238,100,0.06)');
-    grad.addColorStop(0.55, 'rgba(139,92,246,0.08)');
-    grad.addColorStop(1, 'rgba(132,238,100,0)');
+    grad.addColorStop(0, 'rgba(31,157,69,0)');
+    grad.addColorStop(0.45, 'rgba(31,157,69,0.10)');
+    grad.addColorStop(0.55, 'rgba(124,58,237,0.10)');
+    grad.addColorStop(1, 'rgba(31,157,69,0)');
     ctx.fillStyle = grad;
     ctx.fillRect(bx - 50, 0, 100, H);
   }
@@ -259,7 +297,7 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
       const ap = ease(p * 4 - i * 0.14);
       if (ap <= 0) return;
       const [ax, ay] = nodePos(a, W, H), [bx, by] = nodePos(b, W, H);
-      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.strokeStyle = 'rgba(11,17,10,0.28)';
       ctx.globalAlpha = ap * 0.9;
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -366,13 +404,14 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
       if (REDUCED) p = 1;
       const t = now / 1000;
       ctx.clearRect(0, 0, W, H);
-      if (stage === 0) drawScan(ctx, W, H, p, t);
-      else if (stage === 1) drawGraph(ctx, W, H, p, t, false);
+      if (stage === 0) drawListen(ctx, W, H, p, t);
+      else if (stage === 1) drawScan(ctx, W, H, p, t);
+      else if (stage === 2) drawGraph(ctx, W, H, p, t, false);
       else drawGraph(ctx, W, H, p, t, true);
       // timer bar
       if (!REDUCED) {
         tabs[stage].querySelector('.step-timer i').style.width = `${p * 100}%`;
-        if (p >= 1 && !paused) setStage((stage + 1) % 3);
+        if (p >= 1 && !paused) setStage((stage + 1) % tabs.length);
         else if (paused && p >= 1) stageStart = now - STAGE_DUR; // hold at end
       }
     }
@@ -380,7 +419,7 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
   }
   setStage(0);
   if (REDUCED) {
-    setStage(2);
+    setStage(tabs.length - 1);
     tabs.forEach((t) => (t.querySelector('.step-timer i').style.width = '100%'));
     requestAnimationFrame((n) => frame(n));
   } else {
@@ -413,7 +452,7 @@ if (scanCanvas) driveCanvas(scanCanvas, (ctx, W, H, t) => {
     const dp = ct / 1.4;
     const y = ease(dp) * (H * 0.45);
     ctx.fillStyle = C.accent;
-    ctx.beginPath(); ctx.arc(W / 2, 12 + y, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(W / 2, 12 + y, 4.5, 0, Math.PI * 2); ctx.fill();
   }
   // 2. ripples
   const rippleT = ct - 1.4;
@@ -470,8 +509,8 @@ if (scanCanvas) driveCanvas(scanCanvas, (ctx, W, H, t) => {
     tools.forEach((name, i) => {
       const x = k * span + i * (chipW + gap) - off;
       if (x < -chipW || x > W) return;
-      ctx.fillStyle = C.bg1;
-      ctx.strokeStyle = C.border;
+      ctx.fillStyle = C.panel;
+      ctx.strokeStyle = C.borderStrong;
       ctx.fillRect(x, my, chipW, 30);
       ctx.strokeRect(x, my, chipW, 30);
       label(ctx, name, x + chipW / 2, my + 19, C.lo, 11, 'center');
@@ -552,7 +591,7 @@ if (mapCanvas) driveCanvas(mapCanvas, (ctx, W, H, t) => {
   ctx.globalAlpha = Math.sin(rp * Math.PI) * 0.2;
   ctx.beginPath(); ctx.arc(cx, cy, R * (0.9 + rp * 0.5), 0, Math.PI * 2); ctx.stroke();
   ctx.globalAlpha = 1;
-  label(ctx, 'THE CONTEXT GRAPH OF YOUR LAW FIRM', cx, H - 18, C.lo, 10, 'center');
+  label(ctx, 'THE LIVING MAP OF YOUR FIRM', cx, H - 18, C.lo, 10, 'center');
 });
 
 const analyzeCanvas = document.getElementById('analyze-canvas');
@@ -625,46 +664,9 @@ for (const id of ['priv-track', 'logo-track']) {
 }
 
 /* ================================================================
-   HERO BRAIN
+   HERO — the masked Teams Squared map
    ================================================================ */
-initBrain(document.getElementById('brain-canvas'), {
+initHeroGraph(document.getElementById('hero-graph'), {
   reduced: REDUCED,
   onInteractive: () => document.getElementById('hero-hint')?.classList.add('on'),
-}).catch((err) => {
-  console.warn('Brain init failed, using fallback', err);
-  fallbackBrain(document.getElementById('brain-canvas'));
 });
-
-/* static 2D fallback: settled node cloud */
-function fallbackBrain(canvas) {
-  if (!canvas) return;
-  const ctx = prepCanvas(canvas);
-  const W = canvas.clientWidth, H = canvas.clientHeight;
-  const cx = W * 0.66, cy = H * 0.5, R = Math.min(W, H) * 0.3;
-  const pts = [];
-  let seed = 7;
-  const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-  for (let i = 0; i < 240; i++) {
-    const a = rnd() * Math.PI * 2, b = Math.acos(rnd() * 2 - 1), r = R * Math.cbrt(rnd());
-    const x = Math.sin(b) * Math.cos(a) * r * 1.25, y = Math.cos(b) * r * 0.85, z = Math.sin(b) * Math.sin(a) * r;
-    pts.push([cx + x, cy + y, z]);
-  }
-  ctx.strokeStyle = C.accent;
-  for (let i = 0; i < pts.length; i++) {
-    for (let j = i + 1; j < pts.length; j++) {
-      const dx = pts[i][0] - pts[j][0], dy = pts[i][1] - pts[j][1];
-      if (dx * dx + dy * dy < R * R * 0.06) {
-        ctx.globalAlpha = 0.08;
-        ctx.beginPath(); ctx.moveTo(pts[i][0], pts[i][1]); ctx.lineTo(pts[j][0], pts[j][1]); ctx.stroke();
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
-  for (const [x, y, z] of pts) {
-    const depth = (z / R + 1) / 2;
-    ctx.fillStyle = depth > 0.6 ? C.accent : C.mid;
-    ctx.globalAlpha = 0.3 + depth * 0.7;
-    ctx.beginPath(); ctx.arc(x, y, 1.2 + depth * 1.8, 0, Math.PI * 2); ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-}
