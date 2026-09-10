@@ -42,6 +42,34 @@ const C = {
   amber: '#d98a1e',
 };
 
+/* ---------------- scroll-driven zoom ----------------
+   Each .zs block scales toward 1 as its centre nears the viewport centre and eases back as it
+   leaves — a gentle zoom in / zoom out that reads as depth, not motion sickness. */
+(function scrollZoom() {
+  const els = [...document.querySelectorAll('.zs')];
+  if (!els.length || REDUCED) return;
+  const easeOut = (x) => 1 - Math.pow(1 - x, 2);
+  let ticking = false;
+  function update() {
+    ticking = false;
+    const vh = innerHeight;
+    for (const el of els) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -vh || r.top > vh * 2) continue;
+      const center = r.top + r.height / 2;
+      const d = Math.min(1, Math.abs(center - vh * 0.52) / (vh * 0.72)); // 0 at centre → 1 a screen away
+      const k = easeOut(1 - d);
+      el.style.setProperty('--zs-scale', (0.94 + 0.06 * k).toFixed(4));
+      el.style.setProperty('--zs-opacity', (0.55 + 0.45 * k).toFixed(3));
+    }
+  }
+  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  addEventListener('hashchange', () => setTimeout(update, 50));
+  update();
+})();
+
 /* ---------------- scroll reveal ---------------- */
 const revealIO = new IntersectionObserver((entries) => {
   for (const e of entries) if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); }

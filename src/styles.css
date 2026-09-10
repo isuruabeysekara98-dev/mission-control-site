@@ -29,7 +29,7 @@
 
   --max-w: 1240px;
   --pad-x: 24px;
-  --sec-pad: 130px;
+  --sec-pad: 96px;
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -198,9 +198,10 @@ body[data-view] main, body[data-view] footer { display: none; }
 }
 #hero-graph:active { cursor: grabbing; }
 /* the masked Teams Squared map — the hero's graphic */
-.hg-link { stroke: rgba(31, 157, 69, 0.28); stroke-width: 1; transition: stroke .25s, opacity .25s; }
-.hg-link.hl { stroke: rgba(31, 157, 69, 0.85); stroke-width: 1.6; }
-.hg-link.dim { opacity: 0.18; }
+/* edges are kept very quiet; they only come forward on hover */
+.hg-link { stroke: rgba(11, 17, 10, 0.07); stroke-width: 1; transition: stroke .25s, opacity .25s; }
+.hg-link.hl { stroke: rgba(31, 157, 69, 0.8); stroke-width: 1.6; }
+.hg-link.dim { opacity: 0.3; }
 .hg-node { cursor: grab; transition: opacity .25s; }
 .hg-node.dim { opacity: 0.22; }
 .hg-node circle { transition: r .2s; }
@@ -217,9 +218,12 @@ body[data-view] main, body[data-view] footer { display: none; }
 .hg-node text { font-family: var(--font-body); pointer-events: none; transition: opacity .25s; }
 .hg-node.dept text { font-family: var(--font-display); font-size: 13px; font-weight: 600; fill: var(--text-hi); }
 .hg-node.wf text { font-size: 10.5px; fill: var(--text-mid); }
-.hg-node.person text { font-size: 9.5px; fill: var(--text-lo); opacity: 0.75; }
-.hg-node.tool text { font-size: 9.5px; fill: var(--amber); opacity: 0.85; }
+/* only departments and workflows are labelled at rest; roles and tools name themselves on hover */
+.hg-node.person text { font-size: 9.5px; fill: var(--text-lo); opacity: 0; }
+.hg-node.tool text { font-size: 9.5px; fill: var(--amber); opacity: 0; }
 .hg-node.person.hl text, .hg-node.tool.hl text { opacity: 1; fill: var(--text-hi); }
+.hg-node.wf text { opacity: 0.85; }
+.hg-node.wf.dim text { opacity: 0; }
 .hg-pulse { fill: var(--accent); pointer-events: none; filter: drop-shadow(0 0 4px rgba(132, 238, 100, 0.9)); }
 .hg-key {
   position: absolute; right: var(--pad-x); bottom: 28px; z-index: 2;
@@ -300,6 +304,10 @@ body[data-view] main, body[data-view] footer { display: none; }
 }
 .section-sub { max-width: 52ch; font-size: 1rem; }
 
+/* scroll-driven zoom: blocks scale up as they approach the centre of the viewport and ease back as they leave */
+.zs { transform: scale(var(--zs-scale, 0.94)); opacity: var(--zs-opacity, 0.55); will-change: transform, opacity; transform-origin: 50% 50%; }
+@media (prefers-reduced-motion: reduce) { .zs { transform: none; opacity: 1; } }
+
 /* reveal on scroll */
 .reveal {
   opacity: 0;
@@ -311,7 +319,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 
 /* ---------- villain ---------- */
 #villain .cards {
-  margin-top: 64px;
+  margin-top: 44px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   border: 1px solid var(--border);
@@ -748,7 +756,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 
 .end-block {
   text-align: center;
-  padding: 150px 0 140px;
+  padding: 120px 0 110px;
   border-top: 1px solid var(--border);
   background: radial-gradient(700px 360px at 50% 100%, rgba(132, 238, 100, 0.18), transparent 70%), var(--bg-0);
 }

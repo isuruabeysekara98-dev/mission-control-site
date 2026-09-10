@@ -99,9 +99,9 @@
 .legend-note { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 10px; max-width: 210px; color: var(--text-lo); font-size: 0.66rem; line-height: 1.5; }
 .legend-note strong { color: var(--text-mid); font-weight: 500; }
 
-.g-link { stroke: rgba(255,255,255,0.12); stroke-width: 1; transition: stroke .25s, stroke-width .25s; }
+.g-link { stroke: rgba(255,255,255,0.045); stroke-width: 1; transition: stroke .25s, stroke-width .25s; }
 .g-link.hl { stroke: rgba(132,238,100,0.7); stroke-width: 1.6; }
-.g-link.dim { stroke: rgba(255,255,255,0.03); }
+.g-link.dim { stroke: rgba(255,255,255,0.015); }
 
 .g-node { cursor: pointer; animation: atlas-nodein .9s cubic-bezier(.2,.8,.25,1) backwards; }
 @keyframes atlas-nodein { from { opacity: 0; } to { opacity: 1; } }
