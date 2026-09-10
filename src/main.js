@@ -160,7 +160,7 @@ function bracket(ctx, x, y, w, h, size, color, alpha = 1) {
 function label(ctx, text, x, y, color = C.lo, size = 10, align = 'left') {
   ctx.save();
   ctx.fillStyle = color;
-  ctx.font = `${size}px Inter, sans-serif`;
+  ctx.font = `${size}px Satoshi, Inter, sans-serif`;
   ctx.textAlign = align;
   ctx.fillText(text, x, y);
   ctx.restore();
