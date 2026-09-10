@@ -211,7 +211,6 @@ body[data-view] main, body[data-view] footer { display: none; }
   overflow: hidden;
   background:
     radial-gradient(900px 620px at 72% 50%, rgba(132, 238, 100, 0.22), transparent 62%),
-    radial-gradient(800px 560px at 8% 90%, rgba(124, 58, 237, 0.09), transparent 60%),
     linear-gradient(180deg, var(--tint-green) 0%, var(--bg-0) 72%);
 }
 /* the map lives inside a window beside the copy — it never sprawls behind the headline */
@@ -800,12 +799,12 @@ body[data-view] main, body[data-view] footer { display: none; }
 .clients { margin-top: 48px; }
 .clients .proof-label { display: block; margin-bottom: 24px; }
 .proof-label { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-lo); }
-/* client marks are white artwork — inverted onto paper so the strip stays light */
+/* client marks are white artwork — they live on a black band */
 .logo-ribbon {
   position: relative;
   overflow: hidden;
   padding: 26px 0;
-  background: var(--bg-1);
+  background: #0b0f0b;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -823,12 +822,11 @@ body[data-view] main, body[data-view] footer { display: none; }
   flex: none;
   height: clamp(26px, 3.4vw, 40px); width: clamp(96px, 12vw, 150px);
   object-fit: contain;
-  filter: invert(1) brightness(0.35);
-  opacity: 0.55;
+  opacity: 0.72;
   transition: opacity 0.2s;
 }
-.logo-track img:hover { opacity: 0.9; }
-.logo-track img.inv { filter: brightness(0.35); }
+.logo-track img:hover { opacity: 1; }
+.logo-track img.inv { filter: invert(1) brightness(1.5); }
 .logo-track { gap: clamp(40px, 6vw, 88px); }
 .logo-fade {
   position: absolute;
@@ -837,8 +835,8 @@ body[data-view] main, body[data-view] footer { display: none; }
   z-index: 2;
   pointer-events: none;
 }
-.logo-fade.l { left: 0; background: linear-gradient(90deg, var(--bg-1), transparent); }
-.logo-fade.r { right: 0; background: linear-gradient(-90deg, var(--bg-1), transparent); }
+.logo-fade.l { left: 0; background: linear-gradient(90deg, #0b0f0b, transparent); }
+.logo-fade.r { right: 0; background: linear-gradient(-90deg, #0b0f0b, transparent); }
 
 @media (max-width: 960px) {
   .team-grid { grid-template-columns: 1fr; }
