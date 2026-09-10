@@ -101,7 +101,9 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
       let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
       if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
       if (d2 > 160000) continue;
-      const kk = (a.kind === 'dept' && b.kind === 'dept' ? 30000 : 9800) * (compact ? 0.35 : 1) * alpha / d2;
+      const deptPair = a.kind === 'dept' && b.kind === 'dept';
+      // inside a window, departments push each other apart harder so their labels never touch
+      const kk = (deptPair ? (W > 960 || compact ? 30000 : 90000) : 9800) * (compact ? 0.35 : 1) * alpha / d2;
       const d = Math.sqrt(d2), fx = (dx / d) * kk, fy = (dy / d) * kk;
       if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
       if (!b.fixed) { b.vx += fx; b.vy += fy; }
@@ -112,8 +114,9 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
       n.vx *= 0.85; n.vy *= 0.85;
       const sp = Math.hypot(n.vx, n.vy); if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
       n.x += n.vx; n.y += n.vy;
-      const m = n.r + 16, top = compact ? 48 : W > 960 ? 120 : 24, bottom = compact ? 110 : W > 960 ? 40 : 24; // clear of nav/caption
-      const side = compact ? 64 : 0, right = W > 960 && !compact ? 96 : 0; // keep department labels inside the frame
+      // inside a window: keep every department label clear of the frame edges
+      const m = n.r + 16, top = compact ? 48 : W > 960 ? 120 : 44, bottom = compact ? 110 : W > 960 ? 40 : 44;
+      const side = compact ? 92 : W > 960 ? 0 : 76, right = W > 960 && !compact ? 96 : 0;
       n.x = Math.max(m + side, Math.min(W - m - right - side, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
     });
   }
@@ -121,18 +124,33 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
     L.forEach((l) => { l.el.setAttribute('x1', l.s.x); l.el.setAttribute('y1', l.s.y); l.el.setAttribute('x2', l.t.x); l.el.setAttribute('y2', l.t.y); });
     live.forEach((n) => n.el.setAttribute('transform', `translate(${n.x},${n.y})`));
   }
+  /* workflow labels that would overlap each other: keep the better-connected node's, hide the other */
+  const wfs = live.filter((n) => n.kind === 'wf').sort((a, b) => b.neighbors.size - a.neighbors.size);
+  function delabel() {
+    const kept = [];
+    wfs.forEach((n) => {
+      const t = n.el.querySelector('text');
+      const w = t.getComputedTextLength() + 8, h = 14;
+      const box = { x: n.x - w / 2, y: n.y + n.r + 2, w, h };
+      const hit = kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
+      n.el.classList.toggle('lbl-off', hit);
+      if (!hit) kept.push(box);
+    });
+  }
 
-  if (reduced) { for (let i = 0; i < 240; i++) { t += 0.016; step(Math.max(1 - i / 200, 0.02)); } draw(); return; }
+  if (reduced) { for (let i = 0; i < 240; i++) { t += 0.016; step(Math.max(1 - i / 200, 0.02)); } draw(); delabel(); return; }
 
   let visible = true;
   new IntersectionObserver(([e]) => (visible = e.isIntersecting), { threshold: 0.02 }).observe(svg);
   new ResizeObserver(() => { layout(); heat = Math.max(heat, 0.3); }).observe(svg);
 
+  let tick = 0;
   function frame() {
     if (visible) {
       t += 0.016;
       const alpha = Math.max(heat, 0.02); heat *= 0.97;
       step(alpha); draw();
+      if (++tick % 20 === 0) delabel();
       if (Math.random() < 0.08 && pulses.length < 16) {
         const link = L[Math.floor(Math.random() * L.length)];
         const c = el('circle', 'hg-pulse'); c.setAttribute('r', 2.4); pulseLayer.appendChild(c);

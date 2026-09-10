@@ -345,6 +345,14 @@
 .gfh-meta { font-size: 0.7rem; color: var(--text-mid); margin-top: 10px; display: flex; gap: 12px; align-items: center; justify-content: center; }
 .gfh-clear { font-size: 0.68rem; letter-spacing: 0.06em; color: var(--text-lo); border: 1px solid var(--border-strong) !important; padding: 4px 10px; transition: color .15s, border-color .15s; }
 .gfh-clear:hover { color: var(--text-hi); border-color: var(--text-lo) !important; }
+/* the department's workflows, listed in the deep-dive panel — one click opens one */
+.gfh-wfs { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.gfh-wfs-label { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-lo); margin-bottom: 4px; }
+.gfh-wf { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 10px; width: 100%; padding: 8px 8px; text-align: left; color: var(--text-mid); font-size: 0.78rem; transition: background .15s, color .15s; }
+.gfh-wf:hover { background: rgba(132,238,100,0.1); color: var(--text-hi); }
+.gfh-wf-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gfh-wf-meta { font-size: 0.66rem; color: var(--text-lo); white-space: nowrap; }
+.graph-focus-head { max-width: 400px; }
 
 .graph-wf-chip {
   position: absolute; bottom: 24px; left: 50%; transform: translate(-50%, 10px);

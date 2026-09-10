@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mission Control — See how your firm actually gets work done</title>
-  <meta name="description" content="Mission Control draws a living map of how legal work really moves through your firm — so you can see where it slows down, before it becomes a problem." />
+  <title>Mission Control — See how your firm operates in real time with AI</title>
+  <meta name="description" content="Mission Control draws a living map of how your firm's legal work really moves — so you catch operational drift before it happens, not months after." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/styles.css" />
   <link rel="stylesheet" href="/src/atlas.css" />
+  <noscript><style>.reveal { opacity: 1 !important; transform: none !important; } .zs { opacity: 1 !important; transform: none !important; }</style></noscript>
 </head>
 <body>
 
@@ -38,36 +39,50 @@
 
 <main>
 
-  <!-- ============ 1a HERO ============ -->
+  <!-- ============ 1 HERO ============ -->
   <section id="hero" aria-label="Hero">
-    <svg id="hero-graph" aria-label="A real firm's map: departments, workflows, roles and tools, with names removed" role="img"></svg>
-    <div class="hero-meta" aria-hidden="true">
-      A legal operations map, drawn from real work.<br />Names removed — roles kept.
-    </div>
     <div class="wrap">
       <div class="hero-copy">
-        <h1>See how your firm <span class="kw">actually</span> gets work done.</h1>
-        <p class="hero-sub">Mission Control quietly watches how legal work moves between your people and your systems, and draws you a living map of it — so you can see where things slow down before they become a problem.</p>
+        <h1>See how your firm operates in <span class="kw">real time</span> with AI</h1>
+        <p class="hero-sub">Catch operational drift before it happens, not detect it a few months after.</p>
         <div class="hero-ctas">
           <a class="btn btn-primary" href="#try">See it on a real firm</a>
-          <a class="btn btn-ghost" href="#how">How it works</a>
-        </div>
-        <div class="hg-key" aria-hidden="true">
-          <span><i style="background:#fff;border:2px solid #1f9d45"></i>Department</span>
-          <span><i style="background:#7c3aed"></i>Workflow</span>
-          <span><i style="background:#fff;border:1.5px solid #39423a"></i>Role</span>
-          <span><i style="background:#d98a1e"></i>Tool</span>
+          <a class="btn btn-ghost" href="#visibility">How it works</a>
         </div>
       </div>
+      <div class="hero-panel module-panel">
+        <svg id="hero-graph" aria-label="A real firm's map: departments, workflows, roles and tools, with names removed" role="img"></svg>
+        <div class="panel-tag"><i></i>A legal operations map · names masked</div>
+        <div class="panel-hint" id="hero-hint">Drag · Hover</div>
+      </div>
     </div>
-    <div class="hero-hint" id="hero-hint">Drag the map — it responds</div>
   </section>
 
-  <!-- ============ 1b VILLAIN ============ -->
-  <section id="villain" class="section-pad section-line">
+  <!-- ============ 2 TRUST STRIP ============ -->
+  <section class="trust-strip" aria-label="Trusted by">
+    <div class="wrap"><span class="proof-label">Backed by Team Squared · Trusted by the firms we work with</span></div>
+    <div class="logo-ribbon">
+      <div class="logo-fade l" aria-hidden="true"></div>
+      <div class="logo-fade r" aria-hidden="true"></div>
+      <div class="logo-track" id="logo-track-home">
+        <img src="/clients/betts-law-co.webp" alt="Betts Law Co" />
+        <img src="/clients/stainton-chellew.webp" alt="Stainton-Chellew" />
+        <img src="/clients/attune-legal.webp" alt="Attune Legal" />
+        <img src="/clients/warlows-legal.webp" alt="Warlows Legal" />
+        <img src="/clients/palmos-legal.webp" alt="Palmos Legal" />
+        <img src="/clients/client-06.webp" alt="NFM Agency" class="inv" />
+        <img src="/clients/client-07.webp" alt="Law Ninjas" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3 WHY THIS IS HARD (centred, appears on scroll) ============ -->
+  <section id="villain" class="section-pad">
     <div class="wrap">
-      <div class="eyebrow reveal">Why this is hard</div>
-      <h2 class="section-h reveal">Nobody has a map of how the work <span class="kw">really</span> moves</h2>
+      <div class="head-center">
+        <div class="eyebrow reveal">Why this is hard</div>
+        <h2 class="section-h reveal">Nobody has a map of how the work <span class="kw">really</span> moves</h2>
+      </div>
       <div class="cards zs">
         <article class="villain-card scan-frame reveal" style="--reveal-delay:0s">
           <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
@@ -80,6 +95,7 @@
               <path class="detour d2" d="M92 65 L128 102 L152 65" stroke-width="1.5" />
               <path class="detour d3" d="M140 65 L162 24 L178 50 L196 65" stroke-width="1.5" />
               <path class="detour d4" d="M180 65 L206 95 L232 65" stroke-width="1.5" />
+              <text class="anno" x="10" y="122">1 official path · 4 detours</text>
             </svg>
           </div>
           <h3>Work rarely follows the process chart</h3>
@@ -92,6 +108,7 @@
               <g id="hop-tools"></g>
               <g id="hop-trails"></g>
               <circle id="hop-dot" class="hop-dot" r="4" cx="40" cy="34" />
+              <text class="anno" x="10" y="128">6 tools · 9 jumps · 1 matter</text>
             </svg>
           </div>
           <h3>Most of it never gets written down</h3>
@@ -111,6 +128,7 @@
               <path class="sop-line" d="M10 65 H250" stroke-width="1.5" />
               <path class="live-line" d="M10 65 C 90 60, 150 42, 250 30" stroke-width="1.5" />
               <text class="ticker" x="152" y="94">days since last review: <tspan id="drift-days">0</tspan></text>
+              <text class="anno" x="10" y="122">the manual · the real path</text>
             </svg>
           </div>
           <h3>By the time you've written it down, it's changed</h3>
@@ -120,47 +138,44 @@
     </div>
   </section>
 
-  <!-- ============ 1c SOLUTION ============ -->
-  <section id="solution" class="section-pad section-line">
+  <!-- ============ 4 THE INTERACTIVE MODULE — the product, early ============ -->
+  <section id="visibility" class="section-pad section-line">
     <div class="wrap">
-      <div class="eyebrow reveal">What Mission Control does</div>
-      <div class="grid">
-        <div class="lighthouse-stage solution-stage reveal zs" aria-hidden="true">
-          <svg id="solution-map"></svg>
-          <div class="stage-tag"><i></i>The map, assembling itself</div>
-          <div class="lighthouse-caption">Built by legal operators, <span class="serif-accent">for legal teams.</span></div>
-        </div>
-        <div>
-          <h2 class="section-h reveal">A living map of how your <span class="kw">firm</span> works</h2>
-          <div class="context-cards">
-            <article class="context-card scan-frame reveal" style="--reveal-delay:0.05s">
-              <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-              <h4>Always up to date</h4>
-              <p>The map is drawn from what your team actually does each day — not from interviews or last year's process documents. As your firm changes, the map changes with it.</p>
-            </article>
-            <article class="context-card scan-frame reveal" style="--reveal-delay:0.15s">
-              <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-              <h4>Captures the real work, across the whole team</h4>
-              <p>Every variation, exception and workaround — the way work really passes between people, departments and systems. Not just one desk, but the hand-offs in between.</p>
-            </article>
-            <article class="context-card scan-frame reveal" style="--reveal-delay:0.25s">
-              <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-              <h4>Every insight shows its source</h4>
-              <p>Anything the map tells you can be traced back to something that was actually observed. Clear, explainable, and easy to check.</p>
-            </article>
+      <div class="module-grid">
+        <div class="module-copy">
+          <div class="eyebrow reveal">See it for yourself</div>
+          <h2 class="section-h reveal">We built real visibility inside our own team first — to make sure this really <span class="kw">works</span></h2>
+          <p class="lede reveal">We wanted to see how this looks for ourselves, at our parent company.</p>
+          <div class="proof-stats reveal">
+            <div class="pstat"><div class="pstat-n">184</div><div class="pstat-l">offboarding cases followed end to end</div><p>Every traversal — not a sample, not a survey.</p></div>
+            <div class="pstat"><div class="pstat-n">40%</div><div class="pstat-l">took an unofficial path</div><p>Five exception paths no procedure described.</p></div>
+            <div class="pstat"><div class="pstat-n">21 h</div><div class="pstat-l">the longest wait, explained</div><p>Traced to one person carrying two workflows — a capacity problem, not a people problem.</p></div>
           </div>
         </div>
+        <a class="atlas-preview reveal zs" href="#try" aria-label="Open the live map">
+          <img src="/preview/workflow-inspector.png" alt="The live workflow view: the usual path, the exception paths, and a step inspector" loading="lazy" />
+          <span class="preview-btn">Open the live map →</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- ============ 1d HOW ============ -->
+  <!-- ============ 5 STATEMENT ============ -->
+  <section id="statement" class="section-line" aria-label="Positioning">
+    <div class="wrap head-center">
+      <div class="eyebrow reveal">Why now</div>
+      <h2 class="statement-big reveal">A first-to-market solution for <span class="kw">legal operations</span>.</h2>
+      <p class="statement-sub reveal">A firm shouldn't need interviews and workshops to know how its own work moves. Mission Control turns what your people actually do, every day, into a map the whole firm can use.</p>
+    </div>
+  </section>
+
+  <!-- ============ 6 OUR APPROACH ============ -->
   <section id="how" class="section-pad section-line">
     <div class="wrap">
-      <div class="eyebrow reveal">How it works</div>
+      <div class="eyebrow reveal">Our approach</div>
       <h2 class="section-h reveal">We listen, scan and map — then show you where work is <span class="kw">drifting</span></h2>
       <p class="section-sub reveal">Four steps, most of which happen without your team lifting a finger. The map that comes out is specific to your firm — generated by AI from how your people really work together.</p>
-      <div class="stepper" role="tablist" aria-label="How it works stages">
+      <div class="stepper" role="tablist" aria-label="Our approach">
         <button class="step-tab active" role="tab" aria-selected="true" data-stage="0" id="tab-listen">
           <span class="step-bracket" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           Listen.
@@ -214,34 +229,93 @@
     </div>
   </section>
 
-  <!-- ============ 2e PRIVACY ============ -->
-  <section id="privacy" class="section-pad">
+  <!-- ============ 7 WHAT MISSION CONTROL DOES (demarcated band) ============ -->
+  <section id="solution">
+    <div class="wrap">
+      <div class="eyebrow reveal">What Mission Control does</div>
+      <div class="grid">
+        <div class="lighthouse-stage reveal zs" aria-hidden="true">
+          <div class="beam-wrap"><div class="beam"></div></div>
+          <div class="monolith"></div>
+          <div class="lighthouse-caption">Built by legal operators, <span class="serif-accent">for legal teams.</span></div>
+        </div>
+        <div>
+          <h2 class="section-h reveal">A living map of how your <span class="kw">firm</span> works</h2>
+          <div class="context-cards">
+            <article class="context-card scan-frame reveal" style="--reveal-delay:0.05s">
+              <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+              <h4>Always up to date</h4>
+              <p>The map is drawn from what your team actually does each day — not from interviews or last year's process documents. As your firm changes, the map changes with it.</p>
+            </article>
+            <article class="context-card scan-frame reveal" style="--reveal-delay:0.15s">
+              <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+              <h4>Captures the real work, across the whole team</h4>
+              <p>Every variation, exception and workaround — the way work really passes between people, departments and systems. Not just one desk, but the hand-offs in between.</p>
+            </article>
+            <article class="context-card scan-frame reveal" style="--reveal-delay:0.25s">
+              <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+              <h4>Every insight shows its source</h4>
+              <p>Anything the map tells you can be traced back to something that was actually observed. Clear, explainable, and easy to check.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8 PRIVACY ============ -->
+  <section id="privacy">
     <div class="wrap">
       <div class="eyebrow reveal">Privacy</div>
       <h2 class="section-h reveal">Built to respect <span class="kw">boundaries</span></h2>
       <p class="section-sub reveal">We map the shape of the work — who hands what to whom, and how long it takes — not the contents of your files.</p>
-    </div>
-    <div class="priv-fade l" aria-hidden="true"></div>
-    <div class="priv-fade r" aria-hidden="true"></div>
-    <div class="priv-track" id="priv-track">
-      <div class="priv-card"><h4>The shape of work, not the content</h4><p>We record steps, timings and hand-offs. We don't store what's inside a privileged document or email.</p></div>
-      <div class="priv-card"><h4>People aren't the unit of analysis</h4><p>Individual activity rolls up into how the process behaves. The map is about the work, not about watching anyone.</p></div>
-      <div class="priv-card"><h4>Privilege is respected at the source</h4><p>Boundaries are set where observation happens — not filtered out afterwards.</p></div>
-      <div class="priv-card"><h4>Your data stays in your environment</h4><p>Processing runs inside your own systems and your own jurisdiction. Nothing is routed through ours.</p></div>
-      <div class="priv-card"><h4>Everything can be traced</h4><p>Every observation and every conclusion is logged, so you can always see how the map reached what it's telling you.</p></div>
+      <div class="gov-row zs">
+        <div class="gov reveal" style="--reveal-delay:0s"><div class="gov-n">0</div><div class="gov-l">documents stored</div><p>We keep steps, timings and hand-offs. Never what's inside a privileged file or email.</p></div>
+        <div class="gov reveal" style="--reveal-delay:0.06s"><div class="gov-n">100%</div><div class="gov-l">inside your environment</div><p>Processing runs in your own systems and your own jurisdiction. Nothing routes through ours.</p></div>
+        <div class="gov reveal" style="--reveal-delay:0.12s"><div class="gov-n">Roles</div><div class="gov-l">not names</div><p>People are never the unit of analysis. Individual activity rolls up into how the process behaves.</p></div>
+        <div class="gov reveal" style="--reveal-delay:0.18s"><div class="gov-n">Every</div><div class="gov-l">insight traceable</div><p>Each observation and conclusion is logged, so you can always see how the map reached what it's telling you.</p></div>
+      </div>
     </div>
   </section>
 
-  <!-- ============ CLOSING CTA ============ -->
+  <!-- ============ 9 ANY STAGE ============ -->
+  <section id="stages" class="section-pad section-line">
+    <div class="wrap">
+      <div class="eyebrow reveal">Who it's for</div>
+      <h2 class="section-h reveal">Built for firms at <span class="kw">any stage</span></h2>
+      <div class="stage-cards zs">
+        <a class="stage-card scan-frame reveal" href="#try" style="--reveal-delay:0s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+          <h4>No operations team?</h4>
+          <p>Get a clear picture of how work moves through the firm without hiring for it.</p>
+          <span class="card-cta">Talk to us →</span>
+        </a>
+        <a class="stage-card scan-frame reveal" href="#try" style="--reveal-delay:0.08s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+          <h4>Lean operations team?</h4>
+          <p>Stop documenting by hand. The map keeps itself current while you focus on fixing what it shows.</p>
+          <span class="card-cta">Talk to us →</span>
+        </a>
+        <a class="stage-card scan-frame reveal" href="#try" style="--reveal-delay:0.16s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+          <h4>Established operations function?</h4>
+          <p>Put an early warning on drift across every practice group, with evidence behind every flag.</p>
+          <span class="card-cta">Talk to us →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10 CLOSING CTA ============ -->
   <section class="end-block section-line" aria-label="Request a demo">
     <div class="wrap zs">
-      <h2 class="reveal">See how your firm <span class="serif-accent kw">really</span> works.</h2>
+      <h2 class="reveal">Ready to see how your firm <span class="serif-accent kw">really</span> works?</h2>
       <p class="reveal">We'll walk you through the map of a real organisation, then talk about yours.</p>
       <div class="end-ctas reveal">
         <a class="btn btn-primary" href="#try">Request a demo</a>
         <a class="btn btn-ghost" href="#try">Or see a real firm's map first →</a>
       </div>
-      <p class="end-proof reveal">Built by LexOps · Backed by Team Squared · Trusted by <b>Betts Law Co</b>, <b>Stainton Chellew</b>, <b>Attune Legal</b>, <b>Warlows Legal</b> and <b>Palmos Legal</b></p>
+      <p class="end-proof reveal">Backed by Team Squared · Trusted by <b>Betts Law Co</b>, <b>Stainton Chellew</b>, <b>Attune Legal</b>, <b>Warlows Legal</b> and <b>Palmos Legal</b></p>
     </div>
   </section>
 
@@ -256,16 +330,16 @@
     </div>
     <div class="wrap">
       <div class="story">
-        <p class="lede reveal">LexOps was built by people who worked inside legal departments — not external consultants. That shapes what we build, what we focus on, and how we measure success.</p>
+        <p class="lede reveal">Mission Control was built by people who worked inside legal departments — not external consultants. That shapes what we build, what we focus on, and how we measure success.</p>
         <div>
-          <p class="reveal">Most legal teams we work with are staffed by talented, hard-working people who are doing too much with too little. We don't sell software or theoretical frameworks — we work directly with legal teams to design operational systems that actually get implemented.</p>
+          <p class="reveal">Most legal teams we work with are staffed by talented, hard-working people who are doing too much with too little. We don't sell theoretical frameworks — we work directly with legal teams to design operational systems that actually get implemented.</p>
           <p class="reveal">Mission Control is that experience turned into a product: a clear picture of how legal work actually happens, and an early warning on where it's drifting — built from what we observe, not from interviews and stale documentation.</p>
         </div>
       </div>
       <div class="team-grid zs">
         <article class="team-card scan-frame framed reveal" style="--reveal-delay:0.05s">
           <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-          <figure class="team-photo"><img src="/team/abdurrahman.webp" alt="Abdurrahman Haroon, co-founder of LexOps" loading="lazy" /></figure>
+          <figure class="team-photo"><img src="/team/abdurrahman.webp" alt="Abdurrahman Haroon, co-founder of Mission Control" loading="lazy" /></figure>
           <div class="team-copy">
             <h4>Abdurrahman Haroon</h4>
             <p class="team-role">Co-founder</p>
@@ -274,7 +348,7 @@
         </article>
         <article class="team-card scan-frame framed reveal" style="--reveal-delay:0.15s">
           <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-          <figure class="team-photo"><img src="/team/amresh.webp" alt="Amresh Selvaskandan, co-founder of LexOps" loading="lazy" /></figure>
+          <figure class="team-photo"><img src="/team/amresh.webp" alt="Amresh Selvaskandan, co-founder of Mission Control" loading="lazy" /></figure>
           <div class="team-copy">
             <h4>Amresh Selvaskandan</h4>
             <p class="team-role">Co-founder</p>
@@ -393,13 +467,13 @@
   </div>
 </section>
 
-<!-- ============ VIEW · SEE IT LIVE — Process Atlas (Teams Squared) ============ -->
+<!-- ============ VIEW · SEE IT LIVE — Process Atlas ============ -->
 <section id="try" class="view" aria-label="See it live">
   <div class="wrap view-head compact">
     <a class="view-back" href="#hero">← Back to overview</a>
     <div class="eyebrow">See it live</div>
-    <h2 class="section-h">One real organisation, as a <span class="kw">living map</span></h2>
-    <p class="section-sub">This is the actual map of one company — its departments, workflows, and the people and tools that connect them. Drag anything. Click a department to look inside it; click a workflow to open it and follow the usual path and every exception.</p>
+    <h2 class="section-h">Our parent company, as a <span class="kw">living map</span></h2>
+    <p class="section-sub">We ran Mission Control on Team Squared — our parent company — before anyone else. This is that map, live: every department, workflow, role and tool, as proof of what it can do for your firm. Drag anything. Click a department to look inside it; click a workflow to follow the usual path and every exception.</p>
   </div>
 
   <div class="atlas" id="atlas">
@@ -464,7 +538,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Mission Control. All rights reserved.</span>
-    <span>See how your firm actually gets work done.</span>
+    <span>See how your firm operates in real time with AI.</span>
   </div>
 </footer>
 

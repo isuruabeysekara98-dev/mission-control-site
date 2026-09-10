@@ -77,11 +77,11 @@ const C = {
   function update() {
     ticking = false;
     const vh = innerHeight;
-    // the hero map zooms out and fades as the next section rises through it
+    // the hero map eases back slightly as the section leaves
     if (hero && innerWidth > 960) {
       const gone = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / (vh * 0.9)));
-      hero.style.setProperty('--hero-zoom', (1 + gone * 0.12).toFixed(4));
-      hero.style.setProperty('--hero-fade', (1 - gone * 0.85).toFixed(3));
+      hero.style.setProperty('--hero-zoom', (1 - gone * 0.06).toFixed(4));
+      hero.style.setProperty('--hero-fade', (1 - gone * 0.5).toFixed(3));
     }
     for (const el of els) {
       const r = el.getBoundingClientRect();
@@ -90,7 +90,7 @@ const C = {
       const d = Math.min(1, Math.abs(center - vh * 0.52) / (vh * 0.72)); // 0 at centre → 1 a screen away
       const k = easeOut(1 - d);
       el.style.setProperty('--zs-scale', (0.94 + 0.06 * k).toFixed(4));
-      el.style.setProperty('--zs-opacity', (0.55 + 0.45 * k).toFixed(3));
+      el.style.setProperty('--zs-opacity', (0.82 + 0.18 * k).toFixed(3)); // never dim readable text below 82%
     }
   }
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
@@ -721,7 +721,7 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
 /* ================================================================
    MARQUEES — duplicate tracks for seamless -50% loops
    ================================================================ */
-for (const id of ['priv-track', 'logo-track']) {
+for (const id of ['logo-track', 'logo-track-home']) {
   const track = document.getElementById(id);
   if (track) track.innerHTML += track.innerHTML;
 }
@@ -729,9 +729,4 @@ for (const id of ['priv-track', 'logo-track']) {
 /* ================================================================
    HERO — the masked Teams Squared map
    ================================================================ */
-initHeroGraph(document.getElementById('hero-graph'), {
-  reduced: REDUCED,
-  onInteractive: () => document.getElementById('hero-hint')?.classList.add('on'),
-});
-/* the same map, small and dark, drawing itself on a loop in "What Mission Control does" */
-initHeroGraph(document.getElementById('solution-map'), { reduced: REDUCED, compact: true, loop: true });
+initHeroGraph(document.getElementById('hero-graph'), { reduced: REDUCED });

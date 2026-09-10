@@ -291,9 +291,19 @@ export function initAtlas(root) {
       <div class="gfh-title">${dept.name}</div>
       <div class="gfh-blurb">${dept.blurb}</div>
       <div class="gfh-meta">${dept.workflows.length} workflows · ${inSet.size - 1 - dept.workflows.length} people &amp; tools · ${graph.bridges.length} linked departments beyond the view
-        <button class="gfh-clear" id="gfh-clear">Zoom out ✕</button></div>`;
+        <button class="gfh-clear" id="gfh-clear">Zoom out ✕</button></div>
+      <div class="gfh-wfs">
+        <div class="gfh-wfs-label">Workflows in this department</div>
+        ${dept.workflows.map((w) => `<button class="gfh-wf" data-w="${w.id}">
+          <span class="gs-wf-code">${w.code}</span><span class="gfh-wf-name">${w.name}</span>
+          <span class="gfh-wf-meta"># ${fmt(w.cases)} · ${w.steps.length} steps</span><span class="gs-open" aria-hidden="true">→</span></button>`).join('')}
+      </div>`;
     $('#graph-focus-head').classList.add('on');
     $('#gfh-clear').addEventListener('click', clearFocus);
+    $$('#graph-focus-head .gfh-wf').forEach((b) => b.addEventListener('click', () => {
+      const wf = ALL_WF.find((w) => w.id === b.dataset.w);
+      selectWf(wf); openWorkflow(wf);
+    }));
     $('#view-graph').classList.add('focused');
     // the camera frames the cluster in the space between the side panel and the deep-dive header
     graph.ui = { left: $('.graph-side').offsetWidth + 40, right: $('#graph-focus-head').offsetWidth + 40 };
