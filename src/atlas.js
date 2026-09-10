@@ -136,7 +136,10 @@ export function initAtlas(root) {
     buildGraphData();
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     graph.W = W; graph.H = H;
-    graph.cx = W * 0.56; graph.cy = H * 0.5;
+    // on a phone the departments row sits across the top of the graph; keep nodes below it
+    const sideEl = $('.graph-side');
+    graph.topInset = sideEl && sideEl.offsetWidth > W * 0.6 ? sideEl.offsetHeight + 24 : 0;
+    graph.cx = W * (graph.topInset ? 0.5 : 0.56); graph.cy = (H + graph.topInset) * 0.5;
     graph.svg = svg;
     graph.view = { x: 0, y: 0, w: W, h: H }; // camera (viewBox), eased toward the focused cluster
     graph.scale = 1;
@@ -245,7 +248,10 @@ export function initAtlas(root) {
       if (w < 50 || h < 50 || (w === graph.W && h === graph.H)) return;
       const sx = w / graph.W, sy = h / graph.H;
       graph.nodes.forEach((n) => { n.x *= sx; n.y *= sy; });
-      graph.W = w; graph.H = h; graph.cx = w * 0.56; graph.cy = h * 0.5;
+      graph.W = w; graph.H = h;
+      const sideEl = $('.graph-side');
+      graph.topInset = sideEl && sideEl.offsetWidth > w * 0.6 ? sideEl.offsetHeight + 24 : 0;
+      graph.cx = w * (graph.topInset ? 0.5 : 0.56); graph.cy = (h + graph.topInset) * 0.5;
       if (!graph.inSet) graph.view = { x: 0, y: 0, w, h };
       graph.heat = Math.max(graph.heat, 0.4);
     }).observe(svg);
@@ -306,6 +312,7 @@ export function initAtlas(root) {
       <div class="gfh-blurb">${dept.blurb}</div>
       <div class="gfh-meta">${dept.workflows.length} workflows · ${inSet.size - 1 - dept.workflows.length} people &amp; tools · ${graph.bridges.length} linked departments beyond the view
         <button class="gfh-clear" id="gfh-clear">Zoom out ✕</button></div>
+      <div class="gfh-links">Linked: ${graph.bridges.map((b) => `<b>${b.to.ref.name}</b> <span>(${[b.people.length ? `${b.people.length} people` : '', b.tools.length ? `${b.tools.length} tools` : ''].filter(Boolean).join(', ')})</span>`).join(' · ')}</div>
       <div class="gfh-wfs">
         <div class="gfh-wfs-label">Workflows in this department</div>
         ${dept.workflows.map((w) => `<button class="gfh-wf" data-w="${w.id}">
@@ -319,8 +326,12 @@ export function initAtlas(root) {
       selectWf(wf); openWorkflow(wf);
     }));
     $('#view-graph').classList.add('focused');
-    // the camera frames the cluster in the space between the side panel and the deep-dive header
-    graph.ui = { left: $('.graph-side').offsetWidth + 40, right: $('#graph-focus-head').offsetWidth + 40 };
+    // the camera frames the cluster in the space left by the panels: beside them on desktop,
+    // between the chip row (top) and the deep-dive sheet (bottom) on a phone
+    const side = $('.graph-side'), head = $('#graph-focus-head');
+    graph.ui = side.offsetWidth > graph.W * 0.6
+      ? { left: 0, right: 0, top: side.offsetHeight + 30, bottom: head.offsetHeight + 24 }
+      : { left: side.offsetWidth + 40, right: head.offsetWidth + 40, top: 0, bottom: 0 };
     $('#graph-wf-chip').classList.remove('on');
     syncSidebar(); setCrumbs();
   }
@@ -357,7 +368,7 @@ export function initAtlas(root) {
       l.el.classList.toggle('hl', Boolean(on)); l.el.classList.toggle('dim', Boolean(rel && !on));
     });
     const chip = $('#graph-wf-chip');
-    if (graph.ui) graph.ui.bottom = wf ? 96 : 0; // keep the frame-edge arrows clear of the chip
+    if (graph.ui && !graph.ui.top) graph.ui.bottom = wf ? 96 : 0; // keep the frame-edge arrows clear of the chip (desktop)
     if (wf) {
       chip.innerHTML = `<span class="chip-code">${wf.code}</span><span class="chip-name">${wf.name}</span>
         <span class="chip-meta"># ${fmt(wf.cases)} cases · ${wf.steps.length} activities · ${wf.people.length} people · ${wf.tools.length} systems</span>
@@ -375,8 +386,8 @@ export function initAtlas(root) {
   function delabel() {
     const s = graph.scale || 1;
     const visible = graph.nodes.filter((n) => !n.el.classList.contains('off'));
-    // every disc is reserved space, so are department labels
-    const kept = visible.map((n) => ({ x: n.x - n.r - 3 * s, y: n.y - n.r - 3 * s, w: n.r * 2 + 6 * s, h: n.r * 2 + 6 * s }));
+    // the big discs (departments, workflows) are reserved space, so are department labels; small dots may sit under a label
+    const kept = visible.filter((n) => n.kind === 'dept' || n.kind === 'wf').map((n) => ({ x: n.x - n.r - 3 * s, y: n.y - n.r - 3 * s, w: n.r * 2 + 6 * s, h: n.r * 2 + 6 * s }));
     visible.filter((n) => n.kind === 'dept').forEach((d) => {
       const w = d.el.querySelector('text').getComputedTextLength() + 12 * s;
       kept.push({ x: d.x - w / 2, y: d.y + d.r + 4 * s, w, h: 20 * s });
@@ -453,8 +464,9 @@ export function initAtlas(root) {
         if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
         n.x += n.vx; n.y += n.vy;
         const m = n.r + 14;
-        n.x = Math.max(m + 40, Math.min(graph.W - m - 40, n.x));
-        n.y = Math.max(m + 16, Math.min(graph.H - m - 34, n.y)); // room for the label under the disc
+        const pad = graph.topInset ? 64 : 40; // phones: keep centred department labels inside the frame
+        n.x = Math.max(m + pad, Math.min(graph.W - m - pad, n.x));
+        n.y = Math.max(m + 16 + (graph.topInset || 0), Math.min(graph.H - m - 34, n.y)); // room for the label under the disc
       });
       links.forEach((l) => { l.el.setAttribute('x1', l.s.x); l.el.setAttribute('y1', l.s.y); l.el.setAttribute('x2', l.t.x); l.el.setAttribute('y2', l.t.y); });
       nodes.forEach((n) => n.el.setAttribute('transform', `translate(${n.x},${n.y})`));
@@ -468,10 +480,11 @@ export function initAtlas(root) {
         pts.forEach((n) => { minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x); minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y); });
         const pad = 96;
         const bw = maxX - minX + pad * 2, bh = maxY - minY + pad * 2;
-        const ui = graph.ui || { left: 0, right: 0, bottom: 0 };
-        const uw = Math.max(240, W - ui.left - ui.right), uh = H - 48 - (ui.bottom || 0); // usable screen area, px
-        const s = Math.max(bw / uw, bh / uh, 1 / 1.9);                                    // user units per screen px; never past 1.9×
-        target = { x: (minX + maxX) / 2 - (ui.left + uw / 2) * s, y: (minY + maxY) / 2 - (24 + uh / 2) * s, w: W * s, h: H * s };
+        const ui = graph.ui || { left: 0, right: 0, top: 0, bottom: 0 };
+        const top = (ui.top || 0) + 24;
+        const uw = Math.max(240, W - ui.left - ui.right), uh = Math.max(200, H - top - (ui.bottom || 0) - 24); // usable screen area, px
+        const s = Math.max(bw / uw, bh / uh, 1 / 1.9);                                                       // user units per screen px; never past 1.9×
+        target = { x: (minX + maxX) / 2 - (ui.left + uw / 2) * s, y: (minY + maxY) / 2 - (top + uh / 2) * s, w: W * s, h: H * s };
       }
       const v = graph.view, k = 0.08;
       v.x += (target.x - v.x) * k; v.y += (target.y - v.y) * k; v.w += (target.w - v.w) * k; v.h += (target.h - v.h) * k;
@@ -480,8 +493,8 @@ export function initAtlas(root) {
       graph.svg.style.setProperty('--zs', graph.scale);
 
       /* arrows to departments beyond the frame: from the focused department to the edge of the usable area, labelled */
-      const ui = graph.ui || { left: 0, right: 0, bottom: 0 }, m = 56 * graph.scale;
-      const rect = { x0: v.x + ui.left * graph.scale + m, y0: v.y + m, x1: v.x + v.w - ui.right * graph.scale - m, y1: v.y + v.h - (ui.bottom || 0) * graph.scale - m };
+      const ui = graph.ui || { left: 0, right: 0, top: 0, bottom: 0 }, m = 56 * graph.scale;
+      const rect = { x0: v.x + ui.left * graph.scale + m, y0: v.y + (ui.top || 0) * graph.scale + m, x1: v.x + v.w - ui.right * graph.scale - m, y1: v.y + v.h - (ui.bottom || 0) * graph.scale - m };
       graph.bridges.forEach((b) => {
         const ox = b.from.x, oy = b.from.y;
         let dx = b.to.x - ox, dy = b.to.y - oy; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
@@ -610,9 +623,15 @@ export function initAtlas(root) {
     $$('#zoom-segs .zoom-seg').forEach((b) => { const bz = +b.dataset.z; b.classList.toggle('active', bz === z); b.classList.toggle('done', bz < z); });
     $('#zoom-out').disabled = z === 1; $('#zoom-in').disabled = z === 3;
     const stage = $('#process-stage');
-    stage.style.transform = `scale(${0.86 + z * 0.07})`;
+    const phone = innerWidth < 720;
+    const scale = (phone ? 0.64 : 0.86) + z * 0.07;
+    stage.style.transform = `scale(${scale})`;
     $$('.zl', stage).forEach((el) => el.classList.toggle('zoom-hidden', +el.dataset.zl > z));
     closeDetail();
+    if (phone) { // centre the spine in the phone's viewport
+      const scroll = $('#process-scroll');
+      requestAnimationFrame(() => { scroll.scrollLeft = Math.max(0, GEO.CX * scale - scroll.clientWidth / 2); });
+    }
   }
 
   /* ---- process map ---- */

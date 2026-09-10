@@ -10,7 +10,9 @@ const el = (tag, cls) => { const e = document.createElementNS(NS, tag); if (cls)
    opts.loop    — re-assemble every few seconds (the map "drawing itself") */
 export function initHeroGraph(svg, { reduced = false, onInteractive, compact = false, loop = false } = {}) {
   if (!svg) return;
-  const k = compact ? 0.62 : 1;
+  const narrow = !compact && svg.clientWidth > 0 && svg.clientWidth < 520; // a phone-width window: smaller discs, department labels only
+  svg.classList.toggle('narrow', narrow);
+  const k = compact ? 0.62 : narrow ? 0.8 : 1;
   const nodes = [], links = [], byId = {};
   const add = (n) => { byId[n.id] = n; nodes.push(n); return n; };
   ATLAS.departments.forEach((d) => add({ id: 'd:' + d.id, kind: 'dept', label: d.name, r: 20 * k }));
@@ -115,8 +117,8 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
       const sp = Math.hypot(n.vx, n.vy); if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
       n.x += n.vx; n.y += n.vy;
       // inside a window: keep every department label clear of the frame edges
-      const m = n.r + 16, top = compact ? 48 : W > 960 ? 120 : 44, bottom = compact ? 110 : W > 960 ? 40 : 44;
-      const side = compact ? 92 : W > 960 ? 0 : 76, right = W > 960 && !compact ? 96 : 0;
+      const m = n.r + 16, top = compact ? 48 : W > 960 ? 120 : 44, bottom = compact ? 110 : W > 960 ? 40 : narrow ? 60 : 44;
+      const side = compact ? 92 : W > 960 ? 0 : narrow ? 60 : 76, right = W > 960 && !compact ? 96 : 0;
       n.x = Math.max(m + side, Math.min(W - m - right - side, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
     });
   }
@@ -131,7 +133,7 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
   /* every disc is reserved space, so are department labels; each workflow label tries
      below → above → right → left of its node, and hides only if none of those is clear */
   function delabel() {
-    const kept = live.map((n) => ({ x: n.x - n.r - 3, y: n.y - n.r - 3, w: n.r * 2 + 6, h: n.r * 2 + 6 }));
+    const kept = live.filter((n) => n.kind === 'dept' || n.kind === 'wf').map((n) => ({ x: n.x - n.r - 3, y: n.y - n.r - 3, w: n.r * 2 + 6, h: n.r * 2 + 6 }));
     deptNodes.forEach((d) => { const w = d.el.querySelector('text').getComputedTextLength() + 12; kept.push({ x: d.x - w / 2, y: d.y + d.r + 4, w, h: 18 }); });
     wfs.forEach((n) => {
       const t = n.el.querySelector('text');

@@ -179,9 +179,9 @@ a { color: inherit; text-decoration: none; }
 .view { display: none; padding-top: 64px; min-height: 100vh; }
 .view.active { display: block; }
 body[data-view] main, body[data-view] footer { display: none; }
-.view-head { padding: 40px 0 16px; }
+.view-head { padding: 40px var(--pad-x) 16px; } /* keep the wrap's side padding */
 .view-head .section-sub { margin-bottom: 0; }
-.view-head.compact { padding: 28px 0 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 12px 56px; align-items: end; }
+.view-head.compact { padding: 28px var(--pad-x) 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 12px 56px; align-items: end; }
 .view-head.compact .view-back { grid-column: 1 / -1; margin-bottom: 4px; }
 .view-head.compact .eyebrow { grid-column: 1; margin-bottom: 8px; }
 .view-head.compact .section-h { grid-column: 1; font-size: clamp(1.6rem, 2.8vw, 2.3rem); margin-bottom: 0; }
@@ -701,7 +701,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 .head-center .section-sub { text-align: center; }
 /* See it live: centred head, typed in */
 /* slim head: the map is the point of this screen */
-#try .view-head.try-head { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 0 10px; }
+#try .view-head.try-head { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px var(--pad-x) 10px; }
 #try .try-head .eyebrow { margin-bottom: 4px; font-size: 0.66rem; }
 #try .try-head .section-h { max-width: 32ch; min-height: 1.1em; font-size: clamp(1.2rem, 1.9vw, 1.6rem); margin-bottom: 4px; }
 #try .try-head .section-sub { max-width: 96ch; min-height: 2.8em; font-size: 0.82rem; line-height: 1.4; } /* reserves two lines so the typed text never reflows the atlas */
@@ -894,7 +894,12 @@ footer .wrap { display: flex; justify-content: space-between; align-items: cente
 }
 @media (max-width: 600px) {
   :root { --sec-pad: 44px; --sec-pad-tight: 32px; }
-  .hero-panel { height: 320px; }
+  .hero-panel { height: 440px; }
+  .hero-panel .panel-hint { display: none; }
+  #hero-graph.narrow .hg-node.person, #hero-graph.narrow .hg-node.tool { opacity: 0.45; }
+  .hero-panel .panel-tag { font-size: 0.58rem; }
+  .hero-panel .panel-key { gap: 10px; font-size: 0.6rem; }
+  #hero-graph.narrow .hg-node.wf text, #hero-graph.narrow .hg-node.person text, #hero-graph.narrow .hg-node.tool text { display: none; }
   #trust .pillars { grid-template-columns: 1fr; }
   .pillar { border-right: 0; }
   #how .stepper { gap: 14px; grid-template-columns: 1fr 1fr; }
