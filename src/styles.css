@@ -325,7 +325,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 .section-sub { max-width: 52ch; font-size: 1rem; }
 
 /* scroll-driven zoom: blocks scale up as they approach the centre of the viewport and ease back as they leave */
-.zs { transform: scale(var(--zs-scale, 0.94)); opacity: var(--zs-opacity, 0.82); will-change: transform, opacity; transform-origin: 50% 50%; }
+.zs { --zs-scale: 1; --zs-opacity: 1; transform: scale(var(--zs-scale)); opacity: var(--zs-opacity); will-change: transform, opacity; transform-origin: 50% 50%; } /* JS lowers these; if it never runs, nothing is dimmed */
 @media (prefers-reduced-motion: reduce) { .zs { transform: none; opacity: 1; } }
 
 /* ---------- trust strip (under the hero) ---------- */
@@ -368,11 +368,10 @@ body[data-view] main, body[data-view] footer { display: none; }
   box-shadow: 0 10px 30px -10px rgba(132,238,100,0.8);
 }
 
-/* ---------- privacy stat row ---------- */
-.gov-row { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); margin-top: 26px; background: var(--bg-0); }
-.gov { padding: 28px 26px 30px; border-right: 1px solid var(--border); transition: background 0.3s; }
-.gov:last-child { border-right: 0; }
-.gov:hover { background: var(--bg-1); }
+/* ---------- privacy stat band (borderless, on the blend) ---------- */
+.gov-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 26px; padding: 22px; background: var(--blend); }
+.gov { padding: 18px 20px; transition: background 0.3s; border-radius: 6px; }
+.gov:hover { background: rgba(255,255,255,0.55); }
 .gov-n { font-family: var(--font-display); font-size: clamp(1.9rem, 3vw, 2.5rem); font-weight: 500; letter-spacing: -0.03em; color: var(--accent-deep); line-height: 1; }
 .gov-l { font-family: var(--font-display); font-size: 0.95rem; color: var(--text-hi); margin: 8px 0 10px; }
 .gov p { font-size: 0.84rem; }
@@ -381,10 +380,10 @@ body[data-view] main, body[data-view] footer { display: none; }
 .stage-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 26px; }
 .stage-card {
   display: flex; flex-direction: column; gap: 10px; padding: 30px 28px 26px;
-  border: 1px solid var(--border); background: var(--bg-0);
+  border: 1px solid var(--border); border-left: 3px solid var(--accent); background: var(--bg-0);
   transition: transform 0.3s var(--ease-out-expo), border-color 0.3s, background 0.3s;
 }
-.stage-card:hover { transform: translateY(-3px); border-color: var(--border-strong); background: var(--bg-1); }
+.stage-card:hover { transform: translateY(-3px); border-color: var(--border-strong); border-left-color: var(--accent); background: var(--bg-1); }
 .stage-card h4 { font-family: var(--font-display); font-weight: 500; font-size: 1.2rem; color: var(--text-hi); }
 .stage-card p { font-size: 0.92rem; flex: 1; }
 .card-cta { font-size: 0.85rem; color: var(--accent-deep); font-weight: 500; margin-top: 6px; }
@@ -555,11 +554,13 @@ body[data-view] main, body[data-view] footer { display: none; }
 .scan-frame.framed > .c, .scan-frame:hover > .c { opacity: 1; }
 
 /* ---------- how (stepper) ---------- */
+#how .how-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: end; }
+#how .how-intro .section-sub { margin-bottom: 6px; }
 #how .stepper {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 28px;
-  margin: 32px 0 24px;
+  margin: 28px 0 24px;
 }
 .step-tab {
   background: none;
@@ -697,7 +698,8 @@ body[data-view] main, body[data-view] footer { display: none; }
 
 /* ---------- "we built real visibility inside our own team first" ---------- */
 #visibility { background: var(--bg-1); }
-.module-grid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 48px; align-items: center; margin-top: 12px; }
+.module-grid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 48px; align-items: stretch; margin-top: 12px; }
+.module-grid .atlas-preview { aspect-ratio: auto; height: 100%; min-height: 440px; }
 .module-panel {
   position: relative; height: 520px; overflow: hidden;
   background: var(--bg-0); border: 1px solid var(--border-strong);
@@ -776,12 +778,12 @@ body[data-view] main, body[data-view] footer { display: none; }
 .clients { margin-top: 48px; }
 .clients .proof-label { display: block; margin-bottom: 24px; }
 .proof-label { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-lo); }
-/* client marks are white artwork — they live on a dark band */
+/* client marks are white artwork — inverted onto paper so the strip stays light */
 .logo-ribbon {
   position: relative;
   overflow: hidden;
   padding: 26px 0;
-  background: #0b0f0b;
+  background: var(--bg-1);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -797,13 +799,15 @@ body[data-view] main, body[data-view] footer { display: none; }
 @keyframes logo-roll { to { transform: translateX(-50%); } }
 .logo-track img {
   flex: none;
-  height: 40px; width: 150px;
+  height: clamp(26px, 3.4vw, 40px); width: clamp(96px, 12vw, 150px);
   object-fit: contain;
-  opacity: 0.72;
+  filter: invert(1) brightness(0.35);
+  opacity: 0.55;
   transition: opacity 0.2s;
 }
-.logo-track img:hover { opacity: 1; }
-.logo-track img.inv { filter: invert(1) brightness(1.5); }
+.logo-track img:hover { opacity: 0.9; }
+.logo-track img.inv { filter: brightness(0.35); }
+.logo-track { gap: clamp(40px, 6vw, 88px); }
 .logo-fade {
   position: absolute;
   top: 0; bottom: 0;
@@ -811,8 +815,8 @@ body[data-view] main, body[data-view] footer { display: none; }
   z-index: 2;
   pointer-events: none;
 }
-.logo-fade.l { left: 0; background: linear-gradient(90deg, #0b0f0b, transparent); }
-.logo-fade.r { right: 0; background: linear-gradient(-90deg, #0b0f0b, transparent); }
+.logo-fade.l { left: 0; background: linear-gradient(90deg, var(--bg-1), transparent); }
+.logo-fade.r { right: 0; background: linear-gradient(-90deg, var(--bg-1), transparent); }
 
 @media (max-width: 960px) {
   .team-grid { grid-template-columns: 1fr; }
@@ -843,7 +847,7 @@ footer .wrap { display: flex; justify-content: space-between; align-items: cente
 
 /* ---------- responsive ---------- */
 @media (max-width: 960px) {
-  :root { --sec-pad: 84px; }
+  :root { --sec-pad: 44px; --sec-pad-tight: 32px; }
   /* narrow screens: copy first, then the map window beneath it */
   #hero { padding-top: 88px; }
   #hero .wrap { grid-template-columns: 1fr; gap: 28px; }
@@ -853,7 +857,8 @@ footer .wrap { display: flex; justify-content: space-between; align-items: cente
   #villain .cards { grid-template-columns: 1fr; }
   .villain-card { border-right: 0; border-bottom: 1px solid var(--border); }
   .villain-card:last-child { border-bottom: 0; }
-  #solution .grid, #how .stage-view, .platform-block, #about .story, .proof-grid, .module-grid { grid-template-columns: 1fr; gap: 40px; }
+  #solution .grid, #how .stage-view, .platform-block, #about .story, .proof-grid, .module-grid, #how .how-intro { grid-template-columns: 1fr; gap: 40px; }
+  #how .how-intro { gap: 8px; }
   .module-panel { height: 420px; }
   .gov-row { grid-template-columns: 1fr 1fr; }
   .gov:nth-child(2n) { border-right: 0; }

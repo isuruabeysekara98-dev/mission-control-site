@@ -128,6 +128,7 @@
 .g-node.tool circle { fill: var(--amber); }
 .g-node.tool text { font-size: calc(9.5px * var(--zs, 1)); fill: rgba(240,164,74,0.8); }
 .g-node.person text, .g-node.tool text { opacity: 0; }
+.g-node.wf.lbl-off:not(:hover):not(.hl) text { opacity: 0; }
 .g-node.person.hl text, .g-node.tool.hl text, .g-node:hover text,
 #view-graph.focused .g-node.in.person text, #view-graph.focused .g-node.in.tool text { opacity: 1; }
 

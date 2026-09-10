@@ -357,9 +357,30 @@ export function initAtlas(root) {
   /* ================================================================
      Simulation
      ================================================================ */
+  /* workflow labels that would overlap: keep the better-connected node's, hide the other */
+  function delabel() {
+    const s = graph.scale || 1;
+    // department labels (and discs) are reserved space
+    const kept = graph.nodes.filter((n) => n.kind === 'dept' && !n.el.classList.contains('off')).map((d) => {
+      const w = d.el.querySelector('text').getComputedTextLength() + 12 * s;
+      return { x: d.x - w / 2, y: d.y - d.r - 4 * s, w, h: d.r * 2 + 30 * s };
+    });
+    graph.nodes.filter((n) => n.kind === 'wf' && !n.el.classList.contains('off'))
+      .sort((a, b) => b.neighbors.size - a.neighbors.size)
+      .forEach((n) => {
+        const t = n.el.querySelector('text');
+        const w = t.getComputedTextLength() + 8 * s, h = 15 * s;
+        const box = { x: n.x - w / 2, y: n.y + n.r + 2, w, h };
+        const hit = kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
+        n.el.classList.toggle('lbl-off', hit);
+        if (!hit) kept.push(box);
+      });
+  }
+
   function runSim() {
     const { nodes, links } = graph;
     let t = 0;
+    graph.tick = 0;
     function tick() {
       if (!root.classList.contains('active')) { requestAnimationFrame(tick); return; }
       t += 0.016;
@@ -403,6 +424,7 @@ export function initAtlas(root) {
       });
       links.forEach((l) => { l.el.setAttribute('x1', l.s.x); l.el.setAttribute('y1', l.s.y); l.el.setAttribute('x2', l.t.x); l.el.setAttribute('y2', l.t.y); });
       nodes.forEach((n) => n.el.setAttribute('transform', `translate(${n.x},${n.y})`));
+      if (++graph.tick % 20 === 0) delabel();
       /* camera: ease the viewBox onto the focused cluster (or back to the full mesh) */
       const { W, H } = graph;
       let target = { x: 0, y: 0, w: W, h: H };

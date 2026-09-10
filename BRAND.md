@@ -1,5 +1,7 @@
 # Mission Control — Brand & Design Guidelines
 
+> **Status (2026-09-10): the site is light-themed.** Paper background (`#fbfbf8`), readable green `#1f9d45` for keywords and `#177a36` for small green text, brand lime `#84ee64` kept for buttons and glows, and one tint — a light green → pale violet blend — for panels and bands. Body face is Satoshi (Fontshare); headings stay Space Grotesk. No black bands, no orange or solid-purple tints, no square markers, no proof-text lines listing clients. The Process Atlas ("See it live") is the one dark surface: it is the product instrument. The lighthouse illustration stays by owner request. Sections below describing a dark-first page are historical.
+
 Derived from four reference screenshots supplied 2026-09-03:
 - **Ref A1/A2 (Modal.com hero + inner pages):** hero composition, 3D graphics language, section layout
 - **Ref B1 (Unicorn.studio hero):** live WebGL/WebGPU shader hero, framed canvas, mixed-type display

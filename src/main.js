@@ -615,6 +615,12 @@ if (scanCanvas) driveCanvas(scanCanvas, (ctx, W, H, t) => {
       }
     });
   }
+  // soft edges so the rolling tool row fades out instead of clipping mid-word
+  for (const [x0, x1] of [[0, 70], [W, W - 70]]) {
+    const g = ctx.createLinearGradient(x0, 0, x1, 0);
+    g.addColorStop(0, C.bg1); g.addColorStop(1, 'rgba(242,243,236,0)');
+    ctx.fillStyle = g; ctx.fillRect(Math.min(x0, x1), my - 30, 70, 70);
+  }
 });
 
 const mapCanvas = document.getElementById('map-canvas');

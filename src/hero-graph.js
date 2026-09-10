@@ -126,8 +126,10 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
   }
   /* workflow labels that would overlap each other: keep the better-connected node's, hide the other */
   const wfs = live.filter((n) => n.kind === 'wf').sort((a, b) => b.neighbors.size - a.neighbors.size);
+  const deptNodes = live.filter((n) => n.kind === 'dept');
   function delabel() {
-    const kept = [];
+    // department labels (and the department discs themselves) are reserved space
+    const kept = deptNodes.map((d) => { const w = d.el.querySelector('text').getComputedTextLength() + 12; return { x: d.x - w / 2, y: d.y - d.r - 4, w, h: d.r * 2 + 26 }; });
     wfs.forEach((n) => {
       const t = n.el.querySelector('text');
       const w = t.getComputedTextLength() + 8, h = 14;
