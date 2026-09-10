@@ -23,6 +23,10 @@
   --glow-magenta: #d948ae;
   --ember: #f59e0b;
   --amber: #d98a1e;
+  /* the one tint the page uses: a light green → pale violet blend */
+  --tint-green: #e8f6df;
+  --tint-violet: #f3f0fc;
+  --blend: linear-gradient(135deg, var(--tint-green), var(--tint-violet));
 
   --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-body: "Satoshi", "Inter", "Segoe UI", system-ui, sans-serif; /* Satoshi via Fontshare, same as lex-ops.io */
@@ -205,8 +209,9 @@ body[data-view] main, body[data-view] footer { display: none; }
   padding: 104px 0 40px;
   overflow: hidden;
   background:
-    radial-gradient(900px 620px at 72% 50%, rgba(132, 238, 100, 0.14), transparent 62%),
-    var(--bg-0);
+    radial-gradient(900px 620px at 72% 50%, rgba(132, 238, 100, 0.22), transparent 62%),
+    radial-gradient(800px 560px at 8% 90%, rgba(124, 58, 237, 0.09), transparent 60%),
+    linear-gradient(180deg, var(--tint-green) 0%, var(--bg-0) 72%);
 }
 /* the map lives inside a window beside the copy — it never sprawls behind the headline */
 .hero-panel { height: 540px; }
@@ -611,7 +616,7 @@ body[data-view] main, body[data-view] footer { display: none; }
   gap: 64px;
   align-items: center;
   border: 1px solid var(--border);
-  background: var(--bg-1);
+  background: var(--blend);
   padding: 28px 32px;
 }
 #how-canvas { width: 100%; height: 320px; display: block; }
@@ -641,7 +646,7 @@ body[data-view] main, body[data-view] footer { display: none; }
   height: 420px;
   display: block;
   border: 1px solid var(--border);
-  background: var(--bg-1);
+  background: var(--blend);
 }
 #trust { background: var(--bg-1); }
 .p-copy h3 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); margin-bottom: 16px; }
@@ -706,7 +711,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 .module-copy .lede { font-size: 1.05rem; color: var(--text-mid); margin-bottom: 26px; max-width: 44ch; }
 
 /* ---------- statement ---------- */
-#statement { padding: var(--sec-pad) 0; }
+#statement { padding: var(--sec-pad) 0; background: var(--blend); }
 .statement-big {
   font-family: var(--font-display);
   font-size: clamp(2rem, 4.6vw, 3.8rem);
@@ -719,7 +724,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 .statement-sub { max-width: 58ch; margin: 0 auto; font-size: 1.05rem; }
 
 /* ---------- what Mission Control does: a demarcated band ---------- */
-#solution { padding: var(--sec-pad) 0; background: var(--bg-1); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+#solution { padding: var(--sec-pad) 0; background: var(--blend); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
 /* ---------- who we are ---------- */
 #about .story {
@@ -820,7 +825,7 @@ body[data-view] main, body[data-view] footer { display: none; }
   text-align: center;
   padding: 64px 0 56px;
   border-top: 1px solid var(--border);
-  background: radial-gradient(700px 360px at 50% 100%, rgba(132, 238, 100, 0.18), transparent 70%), var(--bg-0);
+  background: radial-gradient(800px 380px at 50% 100%, rgba(132, 238, 100, 0.28), transparent 70%), linear-gradient(180deg, var(--bg-0), var(--tint-violet));
 }
 .end-block h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); margin-bottom: 20px; }
 .end-block p { margin-bottom: 36px; }
