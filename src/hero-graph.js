@@ -109,7 +109,7 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
       n.vx *= 0.85; n.vy *= 0.85;
       const sp = Math.hypot(n.vx, n.vy); if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
       n.x += n.vx; n.y += n.vy;
-      const m = n.r + 16, top = W > 960 ? 70 : 24, bottom = W > 960 ? 40 : 24;
+      const m = n.r + 16, top = W > 960 ? 120 : 24, bottom = W > 960 ? 40 : 24; // stays below the nav + caption
       const right = W > 960 ? 96 : 0; // keep the right-most department label inside the frame
       n.x = Math.max(m, Math.min(W - m - right, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
     });
