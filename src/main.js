@@ -294,9 +294,9 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
   const OFFPATH = [[1,4],[3,6],[6,7],[5,9]];
 
   const workPanels = [
-    { x: 0.04, y: 0.08, w: 0.4, h: 0.84, name: 'intake email · 2m' },
-    { x: 0.5, y: 0.08, w: 0.46, h: 0.4, name: 'matter opened' },
-    { x: 0.5, y: 0.56, w: 0.46, h: 0.36, name: 'draft v3' },
+    { x: 0.04, y: 0.08, w: 0.4, h: 0.84, name: 'Outlook · intake email · 2 m' },
+    { x: 0.5, y: 0.08, w: 0.46, h: 0.4, name: 'Clio · matter opened · 9 m' },
+    { x: 0.5, y: 0.56, w: 0.46, h: 0.36, name: 'Word · draft v3 · 41 m' },
   ];
 
   function nodePos(i, W, H, pad = 34) {
@@ -352,7 +352,7 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
         ctx.fillRect(x + 12, y + 14 + li * 22, w * (0.5 + ((li * 37) % 40) / 100), 6);
       }
     }
-    // brackets snap on sequentially
+    // brackets snap on sequentially, and the hand-offs between systems are drawn as arcs
     workPanels.forEach((pl, i) => {
       const appear = ease(p * 3.2 - i * 0.9);
       if (appear <= 0) return;
@@ -360,6 +360,14 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
       const inset = (1 - appear) * 12;
       bracket(ctx, x - 6 + inset, y - 6 + inset, w + 12 - inset * 2, h + 12 - inset * 2, 12, C.accent, appear);
       if (appear > 0.9) label(ctx, pl.name, x + 2, y - 12, C.accent, 10);
+      if (i > 0 && appear > 0.9) {
+        const prev = workPanels[i - 1];
+        const x0 = (prev.x + prev.w) * W, y0 = (prev.y + prev.h / 2) * H, x1 = x, y1 = y + h / 2;
+        ctx.strokeStyle = C.accent; ctx.setLineDash([4, 5]); ctx.lineDashOffset = -t * 20; ctx.globalAlpha = 0.7;
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.bezierCurveTo(x0 + 24, y0, x1 - 24, y1, x1, y1); ctx.stroke();
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+        label(ctx, 'hand-off', (x0 + x1) / 2, (y0 + y1) / 2 - 6, C.lo, 9, 'center');
+      }
     });
     // scan beam
     const bx = ((t * 0.14) % 1.3 - 0.15) * W;
@@ -728,9 +736,10 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
     ctx.fillStyle = on ? C.accent : C.mid;
     ctx.beginPath(); ctx.arc(x, y, on ? 4.5 : 3, 0, Math.PI * 2); ctx.fill();
   });
-  // predicted deviation
+  // predicted deviation (drawn to the left when there's no room on the right)
   const [ax, ay] = pos(10);
-  const gx = ax + 30, gy = ay + 56;
+  const gx = ax + 30 + 150 > W ? ax - 40 : ax + 30, gy = ay + 56;
+  const labelLeft = gx < ax;
   const pulse = 0.4 + 0.3 * Math.sin(t * 2.6);
   ctx.strokeStyle = C.amber;
   ctx.setLineDash([3, 5]);
@@ -739,7 +748,7 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
   bracket(ctx, gx - 13, gy - 13, 26, 26, 7, C.amber, 0.4 + pulse * 0.6);
-  label(ctx, 'predicted deviation', gx + 20, gy + 4, C.amber, 10);
+  label(ctx, 'predicted deviation', labelLeft ? gx - 20 : gx + 20, gy + 4, C.amber, 10, labelLeft ? 'right' : 'left');
   // fork stat
   const [fx, fy] = pos(3);
   label(ctx, '87% follow the common path', fx - 4, fy + 24, C.mid, 10.5);

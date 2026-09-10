@@ -191,10 +191,13 @@ export function initAtlas(root) {
       const hit = document.createElementNS(SVGNS, 'circle');
       hit.setAttribute('class', 'hitc'); hit.setAttribute('r', Math.max(n.r + 12, 18));
       const c = document.createElementNS(SVGNS, 'circle'); c.setAttribute('r', n.r);
+      if (n.kind === 'dept') { const core = document.createElementNS(SVGNS, 'circle'); core.setAttribute('class', 'core'); core.setAttribute('r', 6); g.appendChild(core); }
       const t = document.createElementNS(SVGNS, 'text');
       t.setAttribute('text-anchor', 'middle'); t.setAttribute('dy', n.kind === 'dept' ? n.r + 20 : n.r + 13);
       t.textContent = n.kind === 'wf' || n.kind === 'dept' ? n.label : n.label.split(' ')[0];
-      g.append(hit, c, t);
+      g.append(hit, c);
+      if (n.kind === 'dept') g.appendChild(g.querySelector('.core'));
+      g.appendChild(t);
       nodeLayer.appendChild(g);
       n.el = g;
 
@@ -376,16 +379,27 @@ export function initAtlas(root) {
       const w = d.el.querySelector('text').getComputedTextLength() + 12 * s;
       return { x: d.x - w / 2, y: d.y - d.r - 4 * s, w, h: d.r * 2 + 30 * s };
     });
+    // bridge captions ("→ Compliance & ISO · shared beyond this view") are reserved too
+    graph.bridges.forEach((b) => {
+      const w = Math.max(...[...b.label.querySelectorAll('tspan')].map((ts) => ts.getComputedTextLength())) + 10 * s;
+      const m = /translate\(([-\d.]+),([-\d.]+)\)/.exec(b.label.getAttribute('transform') || '');
+      if (!m) return;
+      const anchor = b.label.getAttribute('text-anchor');
+      const x = anchor === 'end' ? +m[1] - w : anchor === 'middle' ? +m[1] - w / 2 : +m[1];
+      kept.push({ x, y: +m[2] - 12 * s, w, h: 30 * s });
+    });
+    const place = (n) => {
+      const t = n.el.querySelector('text');
+      const w = t.getComputedTextLength() + 8 * s, h = 15 * s;
+      const box = { x: n.x - w / 2, y: n.y + n.r + 2, w, h };
+      const hit = kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
+      n.el.classList.toggle('lbl-off', hit);
+      if (!hit) kept.push(box);
+    };
     graph.nodes.filter((n) => n.kind === 'wf' && !n.el.classList.contains('off'))
-      .sort((a, b) => b.neighbors.size - a.neighbors.size)
-      .forEach((n) => {
-        const t = n.el.querySelector('text');
-        const w = t.getComputedTextLength() + 8 * s, h = 15 * s;
-        const box = { x: n.x - w / 2, y: n.y + n.r + 2, w, h };
-        const hit = kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
-        n.el.classList.toggle('lbl-off', hit);
-        if (!hit) kept.push(box);
-      });
+      .sort((a, b) => b.neighbors.size - a.neighbors.size).forEach(place);
+    // in a deep-dive, role and tool labels are visible too — give them the same treatment
+    if (graph.inSet) graph.nodes.filter((n) => (n.kind === 'person' || n.kind === 'tool') && n.el.classList.contains('in')).forEach(place);
   }
 
   function runSim() {

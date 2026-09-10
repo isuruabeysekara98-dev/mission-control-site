@@ -117,6 +117,7 @@
 .g-node.dim { opacity: 0.16; }
 .g-node text { font-family: var(--font-body); fill: var(--text-mid); pointer-events: none; transition: opacity .25s; }
 .g-node.dept circle { fill: #0a1406; stroke: var(--accent); stroke-width: 1.5; animation: atlas-breathe 5s ease-in-out infinite; }
+.g-node.dept circle.core { fill: var(--accent); stroke: none; animation: none; } /* same disc as the hero map */
 @keyframes atlas-breathe {
   0%, 100% { filter: drop-shadow(0 0 8px rgba(132,238,100,0.3)); }
   50%      { filter: drop-shadow(0 0 20px rgba(132,238,100,0.65)); }
@@ -130,7 +131,7 @@
 .g-node.tool circle { fill: var(--amber); }
 .g-node.tool text { font-size: calc(9.5px * var(--zs, 1)); fill: rgba(240,164,74,0.8); }
 .g-node.person text, .g-node.tool text { opacity: 0; }
-.g-node.wf.lbl-off:not(:hover):not(.hl) text { opacity: 0; }
+.g-node.lbl-off:not(:hover):not(.hl) text { opacity: 0 !important; }
 .g-node.person.hl text, .g-node.tool.hl text, .g-node:hover text,
 #view-graph.focused .g-node.in.person text, #view-graph.focused .g-node.in.tool text { opacity: 1; }
 
