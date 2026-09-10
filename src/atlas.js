@@ -430,8 +430,8 @@ export function initAtlas(root) {
         if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
         n.x += n.vx; n.y += n.vy;
         const m = n.r + 14;
-        n.x = Math.max(m, Math.min(graph.W - m, n.x));
-        n.y = Math.max(m + 10, Math.min(graph.H - m, n.y));
+        n.x = Math.max(m + 40, Math.min(graph.W - m - 40, n.x));
+        n.y = Math.max(m + 16, Math.min(graph.H - m - 34, n.y)); // room for the label under the disc
       });
       links.forEach((l) => { l.el.setAttribute('x1', l.s.x); l.el.setAttribute('y1', l.s.y); l.el.setAttribute('x2', l.t.x); l.el.setAttribute('y2', l.t.y); });
       nodes.forEach((n) => n.el.setAttribute('transform', `translate(${n.x},${n.y})`));

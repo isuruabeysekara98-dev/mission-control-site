@@ -3,8 +3,10 @@
    Mission Control palette (obsidian · lime · violet · amber)
    ============================================================ */
 /* the Try view fills exactly one screen: header on top, atlas takes the rest */
-#try.active { display: flex; flex-direction: column; height: 100vh; overflow: hidden; } /* exactly one screen: no page scroll, no white below */
+/* the head sits above; one scroll takes it away and the atlas fills the whole screen */
+#try.active { display: flex; flex-direction: column; height: auto; min-height: 0; }
 #try .view-head { flex: none; width: 100%; }
+#try .atlas { height: calc(100vh - 64px); flex: none; }
 /* The atlas is the product instrument: it keeps its own dark palette regardless of the page theme.
    Every rule below reads these scoped tokens; the focus window and tooltip live inside .atlas so they inherit them. */
 .atlas {

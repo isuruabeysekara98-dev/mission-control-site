@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto('http://localhost:5173/#try', { waitUntil: 'networkidle' });
+await page.waitForTimeout(3000);
+await page.evaluate(() => document.getElementById('atlas').scrollIntoView({ behavior: 'instant' }));
+await page.waitForTimeout(1500);
+await page.screenshot({ path: 'eval/round-13/view-try-fullscreen.png' });
+const r = await page.evaluate(() => { const b = document.getElementById('atlas').getBoundingClientRect(); return { top: Math.round(b.top), height: Math.round(b.height), vh: innerHeight, docBelow: Math.round(document.documentElement.scrollHeight - (scrollY + innerHeight)) }; });
+console.log(JSON.stringify(r), '(expect top≈64, height≈vh-64, docBelow=0)');
+await browser.close();

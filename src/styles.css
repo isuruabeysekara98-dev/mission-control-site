@@ -691,7 +691,7 @@ body[data-view] main, body[data-view] footer { display: none; }
 #try .view-head.try-head { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 0 10px; }
 #try .try-head .eyebrow { margin-bottom: 4px; font-size: 0.66rem; }
 #try .try-head .section-h { max-width: 32ch; min-height: 1.1em; font-size: clamp(1.2rem, 1.9vw, 1.6rem); margin-bottom: 4px; }
-#try .try-head .section-sub { max-width: 96ch; min-height: 1.4em; font-size: 0.82rem; line-height: 1.4; }
+#try .try-head .section-sub { max-width: 96ch; min-height: 2.8em; font-size: 0.82rem; line-height: 1.4; } /* reserves two lines so the typed text never reflows the atlas */
 #try .try-head .view-back { align-self: center; margin-bottom: 4px; font-size: 0.74rem; }
 @media (max-height: 760px) { #try .try-head .section-sub, #try .try-head .view-back { display: none; } }
 .tw-caret { display: inline-block; width: 2px; height: 0.95em; background: var(--accent); margin-left: 3px; vertical-align: -0.12em; animation: tw-blink 0.9s steps(1) infinite; }
