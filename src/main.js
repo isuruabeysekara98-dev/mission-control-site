@@ -359,8 +359,8 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
       const x = pl.x * W, y = pl.y * H, w = pl.w * W, h = pl.h * H;
       const inset = (1 - appear) * 12;
       bracket(ctx, x - 6 + inset, y - 6 + inset, w + 12 - inset * 2, h + 12 - inset * 2, 12, C.accent, appear);
-      if (appear > 0.9) label(ctx, pl.name, x + 2, y - 12, C.accent, 10);
-      if (i > 0 && appear > 0.9) {
+      ctx.globalAlpha = appear; label(ctx, pl.name, x + 2, y - 12, C.accent, 10); ctx.globalAlpha = 1; // named from the first frame
+      if (i > 0 && appear > 0.5) {
         const prev = workPanels[i - 1];
         const x0 = (prev.x + prev.w) * W, y0 = (prev.y + prev.h / 2) * H, x1 = x, y1 = y + h / 2;
         ctx.strokeStyle = C.accent; ctx.setLineDash([4, 5]); ctx.lineDashOffset = -t * 20; ctx.globalAlpha = 0.7;
@@ -708,7 +708,8 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
     ctx.strokeStyle = C.border;
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
   });
-  // amber deviation heat
+  // amber deviation heat (labels skip when they'd sit on another label)
+  const placed = [];
   OFF.forEach(([a, b, f], i) => {
     const [ax, ay] = pos(a), [bx, by] = pos(b);
     ctx.strokeStyle = C.amber;
@@ -717,7 +718,8 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
     ctx.lineWidth = 1;
     ctx.globalAlpha = 1;
-    label(ctx, `${Math.round(f * 100)}%`, (ax + bx) / 2 + 8, (ay + by) / 2, C.amber, 10);
+    const lx = (ax + bx) / 2 + 8, ly = (ay + by) / 2;
+    if (!placed.some(([px, py]) => Math.hypot(px - lx, py - ly) < 28)) { label(ctx, `${Math.round(f * 100)}%`, lx, ly, C.amber, 10); placed.push([lx, ly]); }
   });
   // common path river
   ctx.strokeStyle = C.accent;
@@ -748,10 +750,10 @@ if (analyzeCanvas) driveCanvas(analyzeCanvas, (ctx, W, H, t) => {
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
   bracket(ctx, gx - 13, gy - 13, 26, 26, 7, C.amber, 0.4 + pulse * 0.6);
-  label(ctx, 'predicted deviation', labelLeft ? gx - 20 : gx + 20, gy + 4, C.amber, 10, labelLeft ? 'right' : 'left');
-  // fork stat
+  label(ctx, 'predicted deviation', labelLeft ? gx - 20 : gx + 20, gy - 18, C.amber, 10, labelLeft ? 'right' : 'left');
+  // fork stat, kept clear of the deviation labels
   const [fx, fy] = pos(3);
-  label(ctx, '87% follow the common path', fx - 4, fy + 24, C.mid, 10.5);
+  label(ctx, '87% follow the common path', fx - 4, fy + 34, C.mid, 10.5);
 });
 
 /* ================================================================

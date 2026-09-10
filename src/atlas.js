@@ -374,10 +374,12 @@ export function initAtlas(root) {
   /* workflow labels that would overlap: keep the better-connected node's, hide the other */
   function delabel() {
     const s = graph.scale || 1;
-    // department labels (and discs) are reserved space
-    const kept = graph.nodes.filter((n) => n.kind === 'dept' && !n.el.classList.contains('off')).map((d) => {
+    const visible = graph.nodes.filter((n) => !n.el.classList.contains('off'));
+    // every disc is reserved space, so are department labels
+    const kept = visible.map((n) => ({ x: n.x - n.r - 3 * s, y: n.y - n.r - 3 * s, w: n.r * 2 + 6 * s, h: n.r * 2 + 6 * s }));
+    visible.filter((n) => n.kind === 'dept').forEach((d) => {
       const w = d.el.querySelector('text').getComputedTextLength() + 12 * s;
-      return { x: d.x - w / 2, y: d.y - d.r - 4 * s, w, h: d.r * 2 + 30 * s };
+      kept.push({ x: d.x - w / 2, y: d.y + d.r + 4 * s, w, h: 20 * s });
     });
     // bridge captions ("→ Compliance & ISO · shared beyond this view") are reserved too
     graph.bridges.forEach((b) => {
@@ -388,13 +390,20 @@ export function initAtlas(root) {
       const x = anchor === 'end' ? +m[1] - w : anchor === 'middle' ? +m[1] - w / 2 : +m[1];
       kept.push({ x, y: +m[2] - 12 * s, w, h: 30 * s });
     });
+    const hits = (box) => kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
+    // each label tries below → above → right → left of its node, and hides only if none is clear
     const place = (n) => {
       const t = n.el.querySelector('text');
-      const w = t.getComputedTextLength() + 8 * s, h = 15 * s;
-      const box = { x: n.x - w / 2, y: n.y + n.r + 2, w, h };
-      const hit = kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
-      n.el.classList.toggle('lbl-off', hit);
-      if (!hit) kept.push(box);
+      const w = t.getComputedTextLength() + 8 * s, h = 15 * s, r = n.r;
+      const options = [
+        { box: { x: n.x - w / 2, y: n.y + r + 2, w, h }, x: 0, dy: r + 13, anchor: 'middle' },
+        { box: { x: n.x - w / 2, y: n.y - r - 2 - h, w, h }, x: 0, dy: -(r + 5), anchor: 'middle' },
+        { box: { x: n.x + r + 6, y: n.y - h / 2, w, h }, x: r + 8, dy: 4, anchor: 'start' },
+        { box: { x: n.x - r - 6 - w, y: n.y - h / 2, w, h }, x: -(r + 8), dy: 4, anchor: 'end' },
+      ];
+      const pick = options.find((o) => !hits(o.box));
+      n.el.classList.toggle('lbl-off', !pick);
+      if (pick) { t.setAttribute('x', pick.x); t.setAttribute('dy', pick.dy); t.setAttribute('text-anchor', pick.anchor); kept.push(pick.box); }
     };
     graph.nodes.filter((n) => n.kind === 'wf' && !n.el.classList.contains('off'))
       .sort((a, b) => b.neighbors.size - a.neighbors.size).forEach(place);

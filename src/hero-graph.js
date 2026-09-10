@@ -127,16 +127,24 @@ export function initHeroGraph(svg, { reduced = false, onInteractive, compact = f
   /* workflow labels that would overlap each other: keep the better-connected node's, hide the other */
   const wfs = live.filter((n) => n.kind === 'wf').sort((a, b) => b.neighbors.size - a.neighbors.size);
   const deptNodes = live.filter((n) => n.kind === 'dept');
+  const hits = (box, kept) => kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
+  /* every disc is reserved space, so are department labels; each workflow label tries
+     below → above → right → left of its node, and hides only if none of those is clear */
   function delabel() {
-    // department labels (and the department discs themselves) are reserved space
-    const kept = deptNodes.map((d) => { const w = d.el.querySelector('text').getComputedTextLength() + 12; return { x: d.x - w / 2, y: d.y - d.r - 4, w, h: d.r * 2 + 26 }; });
+    const kept = live.map((n) => ({ x: n.x - n.r - 3, y: n.y - n.r - 3, w: n.r * 2 + 6, h: n.r * 2 + 6 }));
+    deptNodes.forEach((d) => { const w = d.el.querySelector('text').getComputedTextLength() + 12; kept.push({ x: d.x - w / 2, y: d.y + d.r + 4, w, h: 18 }); });
     wfs.forEach((n) => {
       const t = n.el.querySelector('text');
-      const w = t.getComputedTextLength() + 8, h = 14;
-      const box = { x: n.x - w / 2, y: n.y + n.r + 2, w, h };
-      const hit = kept.some((k) => box.x < k.x + k.w && box.x + box.w > k.x && box.y < k.y + k.h && box.y + box.h > k.y);
-      n.el.classList.toggle('lbl-off', hit);
-      if (!hit) kept.push(box);
+      const w = t.getComputedTextLength() + 8, h = 14, r = n.r;
+      const options = [
+        { box: { x: n.x - w / 2, y: n.y + r + 2, w, h }, x: 0, dy: r + 12, anchor: 'middle' },
+        { box: { x: n.x - w / 2, y: n.y - r - 2 - h, w, h }, x: 0, dy: -(r + 5), anchor: 'middle' },
+        { box: { x: n.x + r + 6, y: n.y - h / 2, w, h }, x: r + 8, dy: 4, anchor: 'start' },
+        { box: { x: n.x - r - 6 - w, y: n.y - h / 2, w, h }, x: -(r + 8), dy: 4, anchor: 'end' },
+      ];
+      const pick = options.find((o) => !hits(o.box, kept) && o.box.x > 4 && o.box.x + o.box.w < W - 4);
+      n.el.classList.toggle('lbl-off', !pick);
+      if (pick) { t.setAttribute('x', pick.x); t.setAttribute('dy', pick.dy); t.setAttribute('text-anchor', pick.anchor); kept.push(pick.box); }
     });
   }
 
