@@ -686,10 +686,11 @@ body[data-view] main, body[data-view] footer { display: none; }
 .head-center .section-h { max-width: 24ch; font-size: clamp(2.2rem, 4.4vw, 3.6rem); }
 .head-center .section-sub { text-align: center; }
 /* See it live: centred head, typed in */
-#try .view-head.try-head { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px 0 18px; }
-#try .try-head .section-h { max-width: 24ch; min-height: 1.15em; }
-#try .try-head .section-sub { max-width: 68ch; min-height: 3.2em; font-size: 0.92rem; }
-#try .try-head .view-back { align-self: center; margin-bottom: 14px; }
+#try .view-head.try-head { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 0 12px; }
+#try .try-head .eyebrow { margin-bottom: 8px; }
+#try .try-head .section-h { max-width: 28ch; min-height: 1.15em; font-size: clamp(1.4rem, 2.4vw, 2rem); margin-bottom: 8px; }
+#try .try-head .section-sub { max-width: 78ch; min-height: 2.2em; font-size: 0.88rem; }
+#try .try-head .view-back { align-self: center; margin-bottom: 8px; }
 .tw-caret { display: inline-block; width: 2px; height: 0.95em; background: var(--accent); margin-left: 3px; vertical-align: -0.12em; animation: tw-blink 0.9s steps(1) infinite; }
 @keyframes tw-blink { 50% { opacity: 0; } }
 .villain-card h3 { font-size: 1.35rem; color: var(--text-hi); }

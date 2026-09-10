@@ -3,7 +3,7 @@
    Mission Control palette (obsidian · lime · violet · amber)
    ============================================================ */
 /* the Try view fills exactly one screen: header on top, atlas takes the rest */
-#try.active { display: flex; flex-direction: column; height: 100vh; }
+#try.active { display: flex; flex-direction: column; height: 100vh; overflow: hidden; } /* exactly one screen: no page scroll, no white below */
 #try .view-head { flex: none; width: 100%; }
 /* The atlas is the product instrument: it keeps its own dark palette regardless of the page theme.
    Every rule below reads these scoped tokens; the focus window and tooltip live inside .atlas so they inherit them. */
@@ -22,7 +22,7 @@
   --amber: #f0a44a;
   position: relative;
   flex: 1;
-  min-height: 560px;
+  min-height: 0;
   border-top: 1px solid rgba(11, 17, 10, 0.12);
   overflow: hidden;
   background: var(--bg-0);
@@ -120,9 +120,9 @@
   50%      { filter: drop-shadow(0 0 20px rgba(132,238,100,0.65)); }
 }
 /* text sizes scale with the camera (--zs = viewBox width / svg width) so labels keep their on-screen size */
-.g-node.dept text { font-family: var(--font-display); font-size: calc(13px * var(--zs, 1)); font-weight: 500; fill: var(--text-hi); }
+.g-node.dept text { font-family: var(--font-display); font-size: calc(14.5px * var(--zs, 1)); font-weight: 500; fill: var(--text-hi); }
 .g-node.wf circle { fill: var(--glow-violet); }
-.g-node.wf text { font-size: calc(10.5px * var(--zs, 1)); fill: var(--text-mid); }
+.g-node.wf text { font-size: calc(11.5px * var(--zs, 1)); fill: var(--text-mid); }
 .g-node.person circle { fill: var(--text-mid); }
 .g-node.person text { font-size: calc(9.5px * var(--zs, 1)); fill: var(--text-lo); }
 .g-node.tool circle { fill: var(--amber); }

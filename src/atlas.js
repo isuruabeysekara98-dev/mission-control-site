@@ -112,13 +112,13 @@ export function initAtlas(root) {
   function buildGraphData() {
     const nodes = [], links = [], idx = {};
     const add = (n) => { idx[n.id] = n; nodes.push(n); return n; };
-    ATLAS.departments.forEach((d) => add({ id: 'd:' + d.id, kind: 'dept', label: d.name, r: 26, ref: d }));
+    ATLAS.departments.forEach((d) => add({ id: 'd:' + d.id, kind: 'dept', label: d.name, r: 32, ref: d }));
     ATLAS.departments.forEach((d) => d.workflows.forEach((w) => {
-      add({ id: 'w:' + w.id, kind: 'wf', label: w.name, r: 10, ref: w, deptId: d.id });
+      add({ id: 'w:' + w.id, kind: 'wf', label: w.name, r: 12, ref: w, deptId: d.id });
       links.push({ a: 'd:' + d.id, b: 'w:' + w.id, w: 2.2 });
     }));
-    ATLAS.people.forEach((p) => add({ id: 'p:' + p.id, kind: 'person', label: p.name, r: 5, ref: p }));
-    ATLAS.tools.forEach((t) => add({ id: 't:' + t.id, kind: 'tool', label: t.name, r: 4, ref: t }));
+    ATLAS.people.forEach((p) => add({ id: 'p:' + p.id, kind: 'person', label: p.name, r: 6, ref: p }));
+    ATLAS.tools.forEach((t) => add({ id: 't:' + t.id, kind: 'tool', label: t.name, r: 5, ref: t }));
     ATLAS.departments.forEach((d) => d.workflows.forEach((w) => {
       w.people.forEach((p) => idx['p:' + p] && links.push({ a: 'w:' + w.id, b: 'p:' + p, w: 1 }));
       w.tools.forEach((t) => idx['t:' + t] && links.push({ a: 'w:' + w.id, b: 't:' + t, w: 0.7 }));
@@ -144,8 +144,8 @@ export function initAtlas(root) {
     const depts = graph.nodes.filter((n) => n.kind === 'dept');
     depts.forEach((d, i) => {
       const a = (i / depts.length) * Math.PI * 2 - Math.PI / 2;
-      d.x = graph.cx + Math.cos(a) * Math.min(W, H) * 0.26;
-      d.y = graph.cy + Math.sin(a) * Math.min(W, H) * 0.26;
+      d.x = graph.cx + Math.cos(a) * Math.min(W, H) * 0.34;
+      d.y = graph.cy + Math.sin(a) * Math.min(W, H) * 0.34;
     });
     graph.nodes.forEach((n) => {
       if (n.kind === 'dept') return;
@@ -374,7 +374,7 @@ export function initAtlas(root) {
       });
       links.forEach((l) => {
         if (l.off) return;
-        const rest = l.s.kind === 'dept' || l.t.kind === 'dept' ? (state.dept ? 200 : 150) : (state.dept ? 124 : 92);
+        const rest = l.s.kind === 'dept' || l.t.kind === 'dept' ? (state.dept ? 200 : 180) : (state.dept ? 124 : 110);
         const dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, d = Math.hypot(dx, dy) || 1;
         const f = ((d - rest) / d) * 0.03 * l.w * alpha;
         if (!l.s.fixed) { l.s.vx += dx * f; l.s.vy += dy * f; }
