@@ -16,12 +16,33 @@ function route() {
   document.querySelectorAll('.nav-links a').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
   if (isView) {
     window.scrollTo({ top: 0, behavior: 'instant' });
-    if (id === 'try' && !atlasReady) { atlasReady = true; initAtlas(document.getElementById('try')); }
+    if (id === 'try' && !atlasReady) { atlasReady = true; initAtlas(document.getElementById('try')); typewriter(); }
   } else if (id && wasView) {
     // main was hidden when the hash changed, so the browser could not scroll to it
     requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: 'instant' }));
   }
 }
+/* the See-it-live head types itself in: title first, then the paragraph */
+function typewriter() {
+  const targets = [...document.querySelectorAll('#try .tw')];
+  if (!targets.length) return;
+  if (REDUCED) { targets.forEach((el) => (el.textContent = el.dataset.text)); return; }
+  const caret = document.createElement('i'); caret.className = 'tw-caret';
+  let i = 0;
+  const typeInto = (el, speed, done) => {
+    const text = el.dataset.text; let n = 0;
+    el.textContent = ''; el.appendChild(caret);
+    const tick = () => {
+      n++; el.textContent = text.slice(0, n); el.appendChild(caret);
+      if (n < text.length) setTimeout(tick, speed + (text[n - 1] === '.' ? 180 : 0));
+      else done();
+    };
+    tick();
+  };
+  const next = () => { if (i >= targets.length) { caret.remove(); return; } const el = targets[i++]; typeInto(el, el.tagName === 'P' ? 11 : 38, next); };
+  setTimeout(next, 250);
+}
+
 window.addEventListener('hashchange', route);
 route();
 
