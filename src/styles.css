@@ -315,13 +315,7 @@ body[data-view] main, body[data-view] footer { display: none; }
   color: var(--accent-deep);
   display: flex;
   align-items: center;
-  gap: 10px;
   margin-bottom: 20px;
-}
-.eyebrow::before {
-  content: "";
-  width: 6px; height: 6px;
-  background: var(--accent);
 }
 .section-h {
   font-size: clamp(1.9rem, 3.6vw, 2.9rem);
@@ -425,67 +419,6 @@ body[data-view] main, body[data-view] footer { display: none; }
     radial-gradient(ellipse 90% 60% at 50% 100%, rgba(132, 238, 100, 0.07), transparent 60%),
     #0b0f0b;
 }
-.beam-wrap {
-  position: absolute;
-  left: 50%; top: 34%;
-  width: 0; height: 0;
-}
-.beam {
-  position: absolute;
-  left: 0; top: 0;
-  width: 700px;
-  height: 2px;
-  transform-origin: 0 50%;
-  animation: beam-rotate 9s linear infinite;
-}
-.beam::before {
-  content: "";
-  position: absolute;
-  inset: -60px 0;
-  background: conic-gradient(
-    from 90deg at 0% 50%,
-    transparent 0deg,
-    rgba(132, 238, 100, 0.0) 160deg,
-    rgba(132, 238, 100, 0.35) 172deg,
-    rgba(217, 72, 174, 0.45) 178deg,
-    rgba(139, 92, 246, 0.55) 181deg,
-    rgba(64, 209, 190, 0.4) 186deg,
-    rgba(132, 238, 100, 0.2) 194deg,
-    transparent 202deg
-  );
-}
-/* soft ambient wash that follows the beam */
-.beam::after {
-  content: "";
-  position: absolute;
-  left: -40px; top: -40px;
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(132, 238, 100, 0.5), transparent 70%);
-}
-@keyframes beam-rotate { to { transform: rotate(360deg); } }
-.monolith {
-  position: relative;
-  width: 86px;
-  height: 66%;
-  background:
-    linear-gradient(105deg, rgba(132,238,100,0.35) 0%, rgba(64,209,190,0.14) 18%, transparent 40%),
-    linear-gradient(255deg, rgba(139,92,246,0.22) 0%, transparent 30%),
-    linear-gradient(160deg, #1d201c 0%, #0a0c0a 60%);
-  border: 1px solid var(--border-strong);
-  border-bottom: 0;
-}
-.monolith::before {
-  content: "";
-  position: absolute;
-  top: -7px; left: 50%;
-  width: 10px; height: 10px;
-  transform: translateX(-50%);
-  background: var(--accent);
-  box-shadow: 0 0 18px 4px rgba(132, 238, 100, 0.55);
-  animation: lamp-pulse 3s ease-in-out infinite;
-}
-@keyframes lamp-pulse { 50% { box-shadow: 0 0 26px 8px rgba(132, 238, 100, 0.75); } }
 .lighthouse-caption {
   position: absolute;
   left: 24px; bottom: 20px;
@@ -496,8 +429,22 @@ body[data-view] main, body[data-view] footer { display: none; }
   color: #dfe3dc;
 }
 .lighthouse-caption .serif-accent { color: var(--accent-bright); }
-.monolith { border-color: rgba(255,255,255,0.18); }
-.monolith::before { background: var(--accent-bright); }
+.lighthouse-caption { z-index: 2; pointer-events: none; text-shadow: 0 2px 14px rgba(0,0,0,0.8); }
+/* the map assembling itself, on the dark stage */
+#solution-map { position: absolute; inset: 0; width: 100%; height: 100%; }
+.solution-stage .hg-link { stroke: rgba(255,255,255,0.09); }
+.solution-stage .hg-link.hl { stroke: rgba(132,238,100,0.8); }
+.solution-stage .hg-node.dept circle.body { fill: #0a1406; stroke: var(--accent-bright); filter: drop-shadow(0 0 10px rgba(132,238,100,0.6)); animation: none; }
+.solution-stage .hg-node.dept text { fill: #f4f5f3; font-size: 11px; }
+.solution-stage .hg-node.wf circle.body { fill: #8b5cf6; filter: none; }
+.solution-stage .hg-node.wf text { fill: #c8ccc7; font-size: 9px; opacity: 0.7; }
+.solution-stage .hg-node.person circle.body { fill: #0b0f0b; stroke: #c8ccc7; }
+.solution-stage .hg-node.tool circle.body { fill: #f0a44a; }
+.solution-stage .hg-node.person text, .solution-stage .hg-node.tool text { display: none; }
+.solution-stage .hg-pulse { fill: var(--accent-bright); }
+.solution-stage .stage-tag { position: absolute; top: 18px; left: 22px; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-bright); display: flex; align-items: center; gap: 8px; }
+.solution-stage .stage-tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-bright); box-shadow: 0 0 8px var(--accent-bright); animation: atlas-pulse 2.2s infinite; }
+@keyframes atlas-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 
 .context-cards { display: flex; flex-direction: column; }
 .context-card {
@@ -512,15 +459,6 @@ body[data-view] main, body[data-view] footer { display: none; }
   font-weight: 500;
   color: var(--text-mid);
   margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.context-card h4::before {
-  content: "";
-  width: 7px; height: 7px;
-  background: var(--accent);
-  flex: none;
 }
 .context-card p { font-size: 0.92rem; max-width: 58ch; }
 
@@ -640,11 +578,7 @@ body[data-view] main, body[data-view] footer { display: none; }
   border-top: 1px solid var(--border);
   font-size: 0.9rem;
   color: var(--text-mid);
-  display: flex;
-  gap: 12px;
-  align-items: baseline;
 }
-.p-copy .plist li::before { content: ""; width: 6px; height: 6px; background: var(--accent); flex: none; transform: translateY(-1px); }
 
 /* ---------- trust ---------- */
 #trust { background: var(--bg-1); }

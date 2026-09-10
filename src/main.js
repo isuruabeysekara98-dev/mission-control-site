@@ -733,3 +733,5 @@ initHeroGraph(document.getElementById('hero-graph'), {
   reduced: REDUCED,
   onInteractive: () => document.getElementById('hero-hint')?.classList.add('on'),
 });
+/* the same map, small and dark, drawing itself on a loop in "What Mission Control does" */
+initHeroGraph(document.getElementById('solution-map'), { reduced: REDUCED, compact: true, loop: true });

@@ -6,17 +6,20 @@ import { ATLAS } from './atlas-data.js';
 const NS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls) => { const e = document.createElementNS(NS, tag); if (cls) e.setAttribute('class', cls); return e; };
 
-export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
+/* opts.compact — a small stage (solution section): tighter radii, centred, no interaction hint
+   opts.loop    — re-assemble every few seconds (the map "drawing itself") */
+export function initHeroGraph(svg, { reduced = false, onInteractive, compact = false, loop = false } = {}) {
   if (!svg) return;
+  const k = compact ? 0.62 : 1;
   const nodes = [], links = [], byId = {};
   const add = (n) => { byId[n.id] = n; nodes.push(n); return n; };
-  ATLAS.departments.forEach((d) => add({ id: 'd:' + d.id, kind: 'dept', label: d.name, r: 20 }));
+  ATLAS.departments.forEach((d) => add({ id: 'd:' + d.id, kind: 'dept', label: d.name, r: 20 * k }));
   ATLAS.departments.forEach((d) => d.workflows.forEach((w) => {
-    add({ id: 'w:' + w.id, kind: 'wf', label: w.name, r: 7, deptId: d.id });
+    add({ id: 'w:' + w.id, kind: 'wf', label: w.name, r: 7 * k, deptId: d.id });
     links.push(['d:' + d.id, 'w:' + w.id, 2.2]);
   }));
-  ATLAS.people.forEach((p) => add({ id: 'p:' + p.id, kind: 'person', label: p.role, r: 4.5 }));  // masked: role, not name
-  ATLAS.tools.forEach((t) => add({ id: 't:' + t.id, kind: 'tool', label: t.name, r: 4 }));
+  ATLAS.people.forEach((p) => add({ id: 'p:' + p.id, kind: 'person', label: p.role, r: 4.5 * k }));  // masked: role, not name
+  ATLAS.tools.forEach((t) => add({ id: 't:' + t.id, kind: 'tool', label: t.name, r: 4 * k }));
   ATLAS.departments.forEach((d) => d.workflows.forEach((w) => {
     w.people.forEach((p) => byId['p:' + p] && links.push(['w:' + w.id, 'p:' + p, 1]));
     w.tools.forEach((t) => byId['t:' + t] && links.push(['w:' + w.id, 't:' + t, 0.7]));
@@ -28,14 +31,14 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
   let W = 0, H = 0, cx = 0, cy = 0;
   const layout = () => {
     W = svg.clientWidth; H = svg.clientHeight;
-    const wide = W > 960;
-    cx = wide ? W * 0.7 : W * 0.5; cy = H * 0.5;
+    const wide = W > 960 && !compact;
+    cx = wide ? W * 0.7 : W * 0.5; cy = H * (compact ? 0.52 : 0.5);
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   };
   layout();
-  if (W < 2 || H < 2) { setTimeout(() => initHeroGraph(svg, { reduced, onInteractive }), 150); return; }
+  if (W < 2 || H < 2) { setTimeout(() => initHeroGraph(svg, { reduced, onInteractive, compact, loop }), 150); return; }
 
-  const spread = Math.min(W, H) * (W > 960 ? 0.32 : 0.36);
+  const spread = Math.min(W, H) * (compact ? 0.3 : W > 960 ? 0.32 : 0.36);
   const depts = live.filter((n) => n.kind === 'dept');
   depts.forEach((d, i) => { const a = (i / depts.length) * Math.PI * 2 - Math.PI / 2; d.x = cx + Math.cos(a) * spread; d.y = cy + Math.sin(a) * spread * 0.9; });
   live.forEach((n) => {
@@ -87,7 +90,7 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
       n.vy += Math.cos(t * n.f1 + n.p2) * n.amp + Math.sin(t * n.f2 + n.p1) * n.amp * 0.6;
     });
     L.forEach((l) => {
-      const rest = l.s.kind === 'dept' || l.t.kind === 'dept' ? 200 : 118;
+      const rest = (l.s.kind === 'dept' || l.t.kind === 'dept' ? 200 : 118) * (compact ? 0.55 : 1);
       const dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, d = Math.hypot(dx, dy) || 1;
       const f = ((d - rest) / d) * 0.03 * l.w * alpha;
       if (!l.s.fixed) { l.s.vx += dx * f; l.s.vy += dy * f; }
@@ -98,8 +101,8 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
       let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
       if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
       if (d2 > 160000) continue;
-      const k = (a.kind === 'dept' && b.kind === 'dept' ? 30000 : 9800) * alpha / d2;
-      const d = Math.sqrt(d2), fx = (dx / d) * k, fy = (dy / d) * k;
+      const kk = (a.kind === 'dept' && b.kind === 'dept' ? 30000 : 9800) * (compact ? 0.35 : 1) * alpha / d2;
+      const d = Math.sqrt(d2), fx = (dx / d) * kk, fy = (dy / d) * kk;
       if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
       if (!b.fixed) { b.vx += fx; b.vy += fy; }
     }
@@ -109,9 +112,9 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
       n.vx *= 0.85; n.vy *= 0.85;
       const sp = Math.hypot(n.vx, n.vy); if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
       n.x += n.vx; n.y += n.vy;
-      const m = n.r + 16, top = W > 960 ? 120 : 24, bottom = W > 960 ? 40 : 24; // stays below the nav + caption
-      const right = W > 960 ? 96 : 0; // keep the right-most department label inside the frame
-      n.x = Math.max(m, Math.min(W - m - right, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
+      const m = n.r + 16, top = compact ? 48 : W > 960 ? 120 : 24, bottom = compact ? 110 : W > 960 ? 40 : 24; // clear of nav/caption
+      const side = compact ? 64 : 0, right = W > 960 && !compact ? 96 : 0; // keep department labels inside the frame
+      n.x = Math.max(m + side, Math.min(W - m - right - side, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
     });
   }
   function draw() {
@@ -147,5 +150,18 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-  setTimeout(() => onInteractive?.(), 2500);
+  if (onInteractive) setTimeout(onInteractive, 2500);
+
+  if (loop) {
+    // every few seconds the map scatters and draws itself again: departments, then workflows, then the rest
+    setInterval(() => {
+      if (!visible) return;
+      live.forEach((n) => {
+        const anchor = n.deptId ? byId['d:' + n.deptId] : null;
+        if (n.kind !== 'dept') { n.x = (anchor ? anchor.x : cx) + (Math.random() - 0.5) * 160; n.y = (anchor ? anchor.y : cy) + (Math.random() - 0.5) * 160; }
+        n.el.style.animation = 'none'; void n.el.getBBox(); n.el.style.animation = '';
+      });
+      heat = 1;
+    }, 7000);
+  }
 }
