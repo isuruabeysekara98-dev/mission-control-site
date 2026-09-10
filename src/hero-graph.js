@@ -29,7 +29,7 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
   const layout = () => {
     W = svg.clientWidth; H = svg.clientHeight;
     const wide = W > 960;
-    cx = wide ? W * 0.68 : W * 0.5; cy = wide ? H * 0.5 : H * 0.5;
+    cx = wide ? W * 0.7 : W * 0.5; cy = H * 0.5;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   };
   layout();
@@ -110,7 +110,8 @@ export function initHeroGraph(svg, { reduced = false, onInteractive } = {}) {
       const sp = Math.hypot(n.vx, n.vy); if (sp > 6) { n.vx *= 6 / sp; n.vy *= 6 / sp; }
       n.x += n.vx; n.y += n.vy;
       const m = n.r + 16, top = W > 960 ? 70 : 24, bottom = W > 960 ? 40 : 24;
-      n.x = Math.max(m, Math.min(W - m, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
+      const right = W > 960 ? 96 : 0; // keep the right-most department label inside the frame
+      n.x = Math.max(m, Math.min(W - m - right, n.x)); n.y = Math.max(m + top, Math.min(H - m - bottom, n.y));
     });
   }
   function draw() {

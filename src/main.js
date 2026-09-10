@@ -25,6 +25,29 @@ function route() {
 window.addEventListener('hashchange', route);
 route();
 
+/* ---------------- nav: scrolled state, progress line, mobile sheet ---------------- */
+(function nav() {
+  const bar = document.querySelector('.site-nav');
+  const progress = document.getElementById('nav-progress');
+  const toggle = document.getElementById('nav-toggle');
+  const sheet = document.getElementById('nav-sheet');
+  const onScroll = () => {
+    bar.classList.toggle('stuck', scrollY > 24);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    if (progress) progress.style.width = max > 0 && !document.body.dataset.view ? `${(scrollY / max) * 100}%` : '0%';
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  const close = () => { sheet.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
+  toggle?.addEventListener('click', () => {
+    const open = !sheet.classList.contains('open');
+    sheet.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  sheet?.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+  addEventListener('hashchange', close);
+})();
+
 /* canvas palette — mirrors the light tokens in styles.css */
 const C = {
   bg: '#ffffff',
@@ -47,12 +70,19 @@ const C = {
    leaves — a gentle zoom in / zoom out that reads as depth, not motion sickness. */
 (function scrollZoom() {
   const els = [...document.querySelectorAll('.zs')];
-  if (!els.length || REDUCED) return;
+  const hero = document.getElementById('hero');
+  if (REDUCED) return;
   const easeOut = (x) => 1 - Math.pow(1 - x, 2);
   let ticking = false;
   function update() {
     ticking = false;
     const vh = innerHeight;
+    // the hero map zooms out and fades as the next section rises through it
+    if (hero && innerWidth > 960) {
+      const gone = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / (vh * 0.9)));
+      hero.style.setProperty('--hero-zoom', (1 + gone * 0.12).toFixed(4));
+      hero.style.setProperty('--hero-fade', (1 - gone * 0.85).toFixed(3));
+    }
     for (const el of els) {
       const r = el.getBoundingClientRect();
       if (r.bottom < -vh || r.top > vh * 2) continue;
@@ -73,7 +103,7 @@ const C = {
 /* ---------------- scroll reveal ---------------- */
 const revealIO = new IntersectionObserver((entries) => {
   for (const e of entries) if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); }
-}, { threshold: 0.15 });
+}, { rootMargin: '0px 0px -12% 0px', threshold: 0 }); // tall blocks reveal as soon as their top clears the fold
 document.querySelectorAll('.reveal').forEach((el) => revealIO.observe(el));
 
 /* ---------------- canvas helper ---------------- */
@@ -223,10 +253,15 @@ const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
     });
     copies.forEach((c, i) => { c.hidden = i !== s; });
   }
-  tabs.forEach((t) => t.addEventListener('click', () => setStage(+t.dataset.stage)));
+  let manual = false; // once the reader picks a step, the auto-advance stops fighting them
+  tabs.forEach((t) => {
+    t.addEventListener('click', () => { manual = true; setStage(+t.dataset.stage); });
+    t.addEventListener('mouseenter', () => (paused = true));
+    t.addEventListener('mouseleave', () => (paused = manual));
+  });
   const region = document.querySelector('#how .stage-view');
   region.addEventListener('mouseenter', () => (paused = true));
-  region.addEventListener('mouseleave', () => (paused = false));
+  region.addEventListener('mouseleave', () => (paused = manual));
 
   /* shared graph layout for map/analyze */
   const GN = [

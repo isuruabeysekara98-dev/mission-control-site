@@ -25,8 +25,16 @@
       <a href="#about">Who we are</a>
     </nav>
     <a class="btn btn-primary nav-cta" href="#try">Request a demo</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-sheet"><i></i><i></i></button>
   </div>
+  <i class="nav-progress" id="nav-progress" aria-hidden="true"></i>
 </header>
+<nav class="nav-sheet" id="nav-sheet" aria-label="Menu">
+  <a href="#platform">Platform</a>
+  <a href="#try">See it live</a>
+  <a href="#about">Who we are</a>
+  <a class="btn btn-primary" href="#try">Request a demo</a>
+</nav>
 
 <main>
 
@@ -44,13 +52,13 @@
           <a class="btn btn-primary" href="#try">See it on a real firm</a>
           <a class="btn btn-ghost" href="#how">How it works</a>
         </div>
+        <div class="hg-key" aria-hidden="true">
+          <span><i style="background:#fff;border:2px solid #1f9d45"></i>Department</span>
+          <span><i style="background:#7c3aed"></i>Workflow</span>
+          <span><i style="background:#fff;border:1.5px solid #39423a"></i>Role</span>
+          <span><i style="background:#d98a1e"></i>Tool</span>
+        </div>
       </div>
-    </div>
-    <div class="hg-key" aria-hidden="true">
-      <span><i style="background:#fff;border:2px solid #1f9d45"></i>Department</span>
-      <span><i style="background:#7c3aed"></i>Workflow</span>
-      <span><i style="background:#fff;border:1.5px solid #39423a"></i>Role</span>
-      <span><i style="background:#d98a1e"></i>Tool</span>
     </div>
     <div class="hero-hint" id="hero-hint">Drag the map — it responds</div>
   </section>
@@ -61,7 +69,8 @@
       <div class="eyebrow reveal">Why this is hard</div>
       <h2 class="section-h reveal">Nobody has a map of how the work <span class="kw">really</span> moves</h2>
       <div class="cards zs">
-        <article class="villain-card reveal" style="--reveal-delay:0s">
+        <article class="villain-card scan-frame reveal" style="--reveal-delay:0s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <div class="viz">
             <svg class="v-messy" viewBox="0 0 260 130" fill="none" aria-hidden="true">
               <path class="official" d="M10 65 H250" stroke-width="1.5" />
@@ -76,7 +85,8 @@
           <h3>Work rarely follows the process chart</h3>
           <p>When a team is busy, people find their own way through. The official path becomes the exception, not the rule.</p>
         </article>
-        <article class="villain-card reveal" style="--reveal-delay:0.12s">
+        <article class="villain-card scan-frame reveal" style="--reveal-delay:0.12s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <div class="viz">
             <svg class="v-hop" viewBox="0 0 260 130" fill="none" aria-hidden="true">
               <g id="hop-tools"></g>
@@ -87,7 +97,8 @@
           <h3>Most of it never gets written down</h3>
           <p>One matter bounces between email, your practice system, Teams, a phone call, Word, and back to email. That journey isn't in any document.</p>
         </article>
-        <article class="villain-card reveal" style="--reveal-delay:0.24s">
+        <article class="villain-card scan-frame reveal" style="--reveal-delay:0.24s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <div class="viz">
             <svg class="v-drift" viewBox="0 0 260 130" fill="none" aria-hidden="true">
               <defs>
@@ -153,21 +164,25 @@
         <button class="step-tab active" role="tab" aria-selected="true" data-stage="0" id="tab-listen">
           <span class="step-bracket" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           Listen.
+          <span class="step-num" aria-hidden="true">01</span>
           <span class="step-timer" aria-hidden="true"><i></i></span>
         </button>
         <button class="step-tab" role="tab" aria-selected="false" data-stage="1" id="tab-scan">
           <span class="step-bracket" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           Scan.
+          <span class="step-num" aria-hidden="true">02</span>
           <span class="step-timer" aria-hidden="true"><i></i></span>
         </button>
         <button class="step-tab" role="tab" aria-selected="false" data-stage="2" id="tab-map">
           <span class="step-bracket" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           Map.
+          <span class="step-num" aria-hidden="true">03</span>
           <span class="step-timer" aria-hidden="true"><i></i></span>
         </button>
         <button class="step-tab" role="tab" aria-selected="false" data-stage="3" id="tab-predict">
           <span class="step-bracket" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           Predict.
+          <span class="step-num" aria-hidden="true">04</span>
           <span class="step-timer" aria-hidden="true"><i></i></span>
         </button>
       </div>
@@ -222,7 +237,11 @@
     <div class="wrap zs">
       <h2 class="reveal">See how your firm <span class="serif-accent kw">really</span> works.</h2>
       <p class="reveal">We'll walk you through the map of a real organisation, then talk about yours.</p>
-      <a class="btn btn-primary reveal" href="#try">Request a demo</a>
+      <div class="end-ctas reveal">
+        <a class="btn btn-primary" href="#try">Request a demo</a>
+        <a class="btn btn-ghost" href="#try">Or see a real firm's map first →</a>
+      </div>
+      <p class="end-proof reveal">Built by LexOps · Backed by Team Squared · Trusted by <b>Betts Law Co</b>, <b>Stainton Chellew</b>, <b>Attune Legal</b>, <b>Warlows Legal</b> and <b>Palmos Legal</b></p>
     </div>
   </section>
 
@@ -342,19 +361,23 @@
       <div class="eyebrow reveal">Trust</div>
       <h2 class="section-h reveal">Made for firms that <span class="kw">can't get it wrong</span></h2>
       <div class="pillars zs">
-        <div class="pillar reveal" style="--reveal-delay:0s">
+        <div class="pillar scan-frame reveal" style="--reveal-delay:0s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <h4>Nothing to integrate</h4>
           <p>No connectors into your document or practice systems. Observation happens at the surface of the work, not inside your records.</p>
         </div>
-        <div class="pillar reveal" style="--reveal-delay:0.08s">
+        <div class="pillar scan-frame reveal" style="--reveal-delay:0.08s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <h4>Stays inside your walls</h4>
           <p>Everything is processed within your own environment. Privileged material never leaves your control.</p>
         </div>
-        <div class="pillar reveal" style="--reveal-delay:0.16s">
+        <div class="pillar scan-frame reveal" style="--reveal-delay:0.16s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <h4>Fits the tools you already use</h4>
           <p>Deploys to your cloud, works with your existing stack, and shares the map wherever your teams already work.</p>
         </div>
-        <div class="pillar reveal" style="--reveal-delay:0.24s">
+        <div class="pillar scan-frame reveal" style="--reveal-delay:0.24s">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           <h4>Every insight shows its evidence</h4>
           <p>Each finding carries the observations behind it, and every automated decision is logged. Your audit trail holds up.</p>
         </div>
