@@ -303,8 +303,9 @@
 .gs-group.active .gs-item { background: var(--accent-dim); color: var(--text-hi); }
 .gs-sub { display: flex; flex-direction: column; gap: 2px; padding: 4px 0 8px 10px; border-left: 1px solid rgba(132,238,100,0.35); margin: 2px 0 4px 14px; }
 .gs-sub[hidden] { display: none; }
-.graph-side { max-height: calc(100% - 48px); overflow-y: auto; }
+.graph-side { max-height: calc(100% - 48px); overflow-y: auto; scrollbar-width: thin; }
 #view-graph.focused .graph-legend { opacity: 0; pointer-events: none; }
+@media (max-height: 820px) { .graph-legend { display: none; } .gs-item { padding: 8px 12px; } }
 .graph-legend { transition: opacity .3s; }
 .gs-wf {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px;

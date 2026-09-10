@@ -144,8 +144,8 @@ export function initAtlas(root) {
     const depts = graph.nodes.filter((n) => n.kind === 'dept');
     depts.forEach((d, i) => {
       const a = (i / depts.length) * Math.PI * 2 - Math.PI / 2;
-      d.x = graph.cx + Math.cos(a) * Math.min(W, H) * 0.34;
-      d.y = graph.cy + Math.sin(a) * Math.min(W, H) * 0.34;
+      d.x = graph.cx + Math.cos(a) * Math.min(W, H) * 0.4;
+      d.y = graph.cy + Math.sin(a) * Math.min(W, H) * 0.4;
     });
     graph.nodes.forEach((n) => {
       if (n.kind === 'dept') return;
@@ -235,6 +235,17 @@ export function initAtlas(root) {
     });
 
     svg.addEventListener('click', () => { if (state.wf) selectWf(null); else if (state.dept) clearFocus(); });
+
+    // the atlas re-fits whenever its box changes (the typed-in head reflows above it; the window resizes)
+    new ResizeObserver(() => {
+      const w = svg.clientWidth, h = svg.clientHeight;
+      if (w < 50 || h < 50 || (w === graph.W && h === graph.H)) return;
+      const sx = w / graph.W, sy = h / graph.H;
+      graph.nodes.forEach((n) => { n.x *= sx; n.y *= sy; });
+      graph.W = w; graph.H = h; graph.cx = w * 0.56; graph.cy = h * 0.5;
+      if (!graph.inSet) graph.view = { x: 0, y: 0, w, h };
+      graph.heat = Math.max(graph.heat, 0.4);
+    }).observe(svg);
 
     graph.heat = 1;
     runSim();
@@ -406,7 +417,7 @@ export function initAtlas(root) {
         let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
         if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
         if (d2 > 160000) continue;
-        const k = (a.kind === 'dept' && b.kind === 'dept' ? 22000 : 5200) * (state.dept ? 2.6 : 1) * alpha / d2;
+        const k = (a.kind === 'dept' && b.kind === 'dept' ? 70000 : 6200) * (state.dept ? 2.6 : 1) * alpha / d2;
         const d = Math.sqrt(d2), fx = (dx / d) * k, fy = (dy / d) * k;
         if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
         if (!b.fixed) { b.vx += fx; b.vy += fy; }
